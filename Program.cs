@@ -10,9 +10,7 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<ApiDbContext>(options => options
     .UseNpgsql(connectionString, b => b.MigrationsAssembly("MediWingWebAPI")));
 
-/*
-builder.Services.AddRateLimiter(_ => _.AddFixedWindowLimiter(policyName: "fixed", options => ))
-*/
+builder.Services.AddCors(); // Add CORS support here
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -29,7 +27,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UsePathBase("/api");
+app.UseRouting(); // Add UseRouting before UseCors 
+app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyMethod()); // Allow all origins and methods for CORS 
+
 app.UseAuthorization();
 
 app.MapControllers();

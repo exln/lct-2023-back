@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-
+// TODO: Переименовать все в Mkb10+что-то
 namespace MediWingWebAPI.Models;
 [PrimaryKey("Id")]
 public class Mkb10

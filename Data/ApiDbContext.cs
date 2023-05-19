@@ -30,6 +30,10 @@ public class ApiDbContext: DbContext
     public DbSet<ServiceBlockAccordance> ServiceBlocks { get; set; }
     public DbSet<ServiceNumberAccordance> ServiceNumbers { get; set; }
     
+    //Inputs
+    public DbSet<UserInputRelation> UserInputRelations { get; set; }
+    public DbSet<UserDiagnosticInput> UserDiagnosticInputs { get; set; }
+    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<User>()

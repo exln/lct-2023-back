@@ -4,12 +4,13 @@ using MediWingWebAPI.Models;
 using MediWingWebAPI.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace MediWingWebAPI.Controllers;
 
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class MKB10Controller: ControllerBase
 {
     private readonly ILogger<MKB10Controller> _logger;
@@ -23,7 +24,7 @@ public class MKB10Controller: ControllerBase
         _context = context;
     }
     
-    [HttpGet(Name = "GetMKB10s")]
+    /*[HttpGet(Name = "GetMKB10s")]
     public async Task<IActionResult> GetMKB10s()
     {
         List<Mkb10> mkb10s = await _context.MKB10s.ToListAsync();
@@ -51,7 +52,7 @@ public class MKB10Controller: ControllerBase
         }
 
         return Ok(mkb10Reads);
-    }
+    }*
 
     /*[HttpPut("{code}", Name = "UpdateMKB10")]
     public async Task<IActionResult> UpdateMKB10(string code, [FromBody] MKB10Update mkb10Update)
@@ -69,7 +70,7 @@ public class MKB10Controller: ControllerBase
         return Ok(mkb10);
     }*/
     
-    [HttpDelete("{code}", Name = "DeleteMKB10")]
+    /*[HttpDelete("{code}", Name = "DeleteMKB10")]
     public async Task<IActionResult> DeleteMKB10(string code)
     {
         Mkb10 mkb10 = Utilitas.SearchMKB10(_context, Utilitas.ParseMKBCode(code));
@@ -83,39 +84,71 @@ public class MKB10Controller: ControllerBase
         await _context.SaveChangesAsync();
         
         return Ok();
-    }
-    
-    [HttpGet("{search}")]
-    public async Task<IActionResult> Get(string search)
+    }*/
+
+    [HttpGet(Name = "GetCodeInfo")]
+    public async Task<IActionResult> GetCodeInfo([FromQuery] string code, int limit = 10)
     {
-        int codeType = -1;
-        Regex pattern = new Regex(@"^([A-Za-z])(?:\d+)?(?:\.(\d+))?$");
-        Match match = pattern.Match(search);
+        int codeType;
+        Regex pattern = new Regex(@"^([A-Za-z])(\d{1,2})?(?:\.(\d+))?$");
+        Match match = pattern.Match(code);
         
         char litera = match.Groups[1].Value.ToUpper()[0];
-        int? number = match.Groups[2].Success ? int.Parse(match.Groups[2].Value) : null;
+        int number = match.Groups[2].Success ? int.Parse(match.Groups[2].Value) : -1;
         int? subnumber = match.Groups[3].Success ? int.Parse(match.Groups[3].Value) : null;
 
         if (subnumber != null) codeType = 2;
-        else if (number == -1) codeType = 1;
+        else if (number != -1) codeType = 1;
         else codeType = 0;
 
         List<Mkb10> results = null;
-        
-        if (codeType == 0)
+
+        if (codeType == 2)
+        {
+            results = await _context.MKB10s
+                .Where(m => m.Litera == litera)
+                .Where(m => m.Number == number)
+                .Where(m => m.Subnumber == subnumber)
+                .ToListAsync();
+        }
+        else if (codeType == 1) 
+        { 
+            results = await _context.MKB10s
+            .Where(m => m.Litera == litera)
+            .Where(m => m.Number == number)
+            .Where(m => m.Subnumber == null)
+            .ToListAsync();
+        }
+        else if (codeType == 0)
         {
             results = await _context.MKB10s
                 .Where(m => m.Litera == litera)
                 .ToListAsync();
         }
-        else if (codeType == 1 | codeType == 2) 
-        { 
-            results = await _context.MKB10s
-            .Where(m => m.Litera == litera)
-            .Where(m => number == null || m.Number == number)
-            .Where(m => subnumber == null|| m.Subnumber == subnumber)
-            .ToListAsync();
-        }
-        return Ok(results);
+
+        return !results.IsNullOrEmpty() ? Ok(results.Take((int)limit).ToList()) : NotFound();
     }
+    
+    [HttpGet("Diagnosis", Name="SearchMKB10")]
+    //public async Task<IActionResult> SearchMkb10([FromQuery] char? litera, string? chapter, int? number, int? subnumber, string? name, int limit = 10)
+    public async Task<IActionResult> SearchMkb10([FromQuery] string search, int limit = 10)
+    {
+        IQueryable<Mkb10> query = _context.MKB10s;
+        Regex pattern = new Regex(@"^([\p{L}]{3,})?([A-Za-z])?(\d+)?(?:\.(\d+))?$");
+        Match match = pattern.Match(search);
+        
+        string? name  = match.Groups[1].Success ? match.Groups[1].Value : null;
+        char? litera = match.Groups[2].Success ? match.Groups[2].Value.ToUpper()[0] : null;
+        int? number = match.Groups[3].Success ? int.Parse(match.Groups[3].Value) : null;
+        int? subnumber = match.Groups[4].Success ? int.Parse(match.Groups[4].Value) : null;
+      
+        if (name != null) query = query.Where(m => m.Name.Contains(name));
+        if (litera != null) query = query.Where(m => m.Litera == litera);
+        if (number != null) query = query.Where(m => m.Number == number);
+        if (subnumber != null) query = query.Where(m => m.Subnumber == subnumber);
+
+        if (query.Any()) return Ok(query.Take(limit).ToList());
+        return NotFound();
+    }
+
 }

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 namespace MediWingWebAPI.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class AssignmentController : ControllerBase
 {
     private readonly ILogger<AssignmentController> _logger;

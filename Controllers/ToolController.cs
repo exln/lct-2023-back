@@ -3,9 +3,10 @@ using MediWingWebAPI.Data;
 using MediWingWebAPI.Models;
 using Util = MediWingWebAPI.Utils.Utilitas;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class ToolController: ControllerBase
 {
     private readonly ILogger<ToolController> _logger;
@@ -224,14 +225,14 @@ public class ToolController: ControllerBase
     {
         foreach (string mkbcode in standartCreation.Mkb10Codes)
         {
-            foreach (string servicecode in standartCreation.HealthcareServiceCodes)
+            foreach (HealthcareServiceWithBool serviceWBool in standartCreation.ServiceCodesWithBools)
             {
                 Standart standart = new()
                 {
                     Id = Guid.NewGuid(),
                     Mkb10Code = mkbcode,
-                    HealthcareServiceCode = servicecode,
-                    IsMandatory = standartCreation.IsMandatory
+                    HealthcareServiceCode = serviceWBool.HealthcareServiceCode,
+                    IsMandatory = serviceWBool.IsMandatory
                 };
                 await _context.Standarts.AddAsync(standart);
             }
@@ -240,5 +241,43 @@ public class ToolController: ControllerBase
         await _context.SaveChangesAsync();
 
         return Ok();
+    }
+    
+    [HttpGet("Standarts", Name = "GetStandarts")]
+    public async Task<IActionResult> GetStandarts([FromQuery] string code, int limit = 10)
+    {
+        List<Standart> query = await _context.Standarts
+            .Where(s => s.Mkb10Code == code)
+            .ToListAsync();
+        
+        if (query == null)
+        {
+            return NotFound();
+        }
+
+        List<HealthcareServiceWithBool> serviceWBools = new List<HealthcareServiceWithBool>();
+        
+        foreach (Standart standart in query)
+        {
+            HealthcareServiceWithBool service = new()
+            {
+                HealthcareServiceCode = standart.HealthcareServiceCode,
+                IsMandatory = standart.IsMandatory
+            };
+            serviceWBools.Add(service);
+        }
+
+        StandartRead result = new StandartRead()
+        {
+            Mkb10Code = code,
+            HealthcareServiceCodesWithBools = serviceWBools
+        };
+        
+        if (result != null)
+        {
+            return Ok(result);
+        }
+
+        return NotFound();
     }
 }
