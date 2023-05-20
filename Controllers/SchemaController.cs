@@ -19,90 +19,131 @@ public class SchemaController : Controller
         _context = context;
     }
     
-    [HttpPost("MKB10", Name="GetMKB10Schema")]
-    public async Task<IActionResult> AddMKB10([FromBody] Mkb10 mkb10)
+    // TODO: Add all schemas
+    // Mkb10 related schemas
+    [HttpPost("Mkb/Mkb10", Name="GetMkb10Schema")]
+    public async Task<IActionResult> AddMkb10([FromBody] Mkb10 mkb10)
     {
         if (mkb10 == null)
         {
             return BadRequest();
         }
-        await _context.MKB10s.AddAsync(mkb10);
+        await _context.Mkb10s.AddAsync(mkb10);
         await _context.SaveChangesAsync();
-        return Ok("MK10 added successfully!");
+        return Ok("Mkb10 added successfully!");
     }
     
-    [HttpPost("ChapterAccordance", Name = "GetChapterAccordanceSchema")]
-    public async Task<IActionResult> AddChapterAccordance([FromBody] ChapterAccordance chapterAccordance)
+    [HttpPost("Mkb10/Chapter", Name = "GetMkb10ChapterSchema")]
+    public async Task<IActionResult> AddMkb10Chapter([FromBody] Mkb10Chapter mkb10Chapter)
     {
-        if (chapterAccordance == null)
+        if (mkb10Chapter == null)
         {
             return BadRequest();
         }
-        await _context.Chapters.AddAsync(chapterAccordance);
+        await _context.Mkb10Chapters.AddAsync(mkb10Chapter);
         await _context.SaveChangesAsync();
-        return Ok("ChapterAccordance added successfully!");
+        return Ok("Mkb10Chapter added successfully!");
     }
-    
-    [HttpPost("HealthcareService", Name="GetHealthcareServiceSchema")]
-    public async Task<IActionResult> AddHealthcareService([FromBody] HealthcareService healthcareService)
+
+    [HttpPost("Mkb10/Standart/Msk", Name = "GetMsk10StandartSchema")]
+    public async Task<IActionResult> AddMsk10Standart([FromBody] Msk10Standart msk10Standart)
     {
-        if (healthcareService == null)
+        if (msk10Standart == null)
         {
             return BadRequest();
         }
-        await _context.HealthcareServices.AddAsync(healthcareService);
+        await _context.Msk10Standarts.AddAsync(msk10Standart);
         await _context.SaveChangesAsync();
-        return Ok("HealthcareService added successfully!");
+        return Ok("Msk10Standart added successfully!");
     }
     
-    [HttpPost("ServiceSectionAccordance", Name = "GetServiceSectionAccordanceSchema")]
-    public async Task<IActionResult> AddServiceSectionAccordance([FromBody] ServiceSectionAccordance healthcareServiceSectionAccordance)
+    [HttpPost("Mkb10/Standart/Rus", Name = "GetRus10StandartSchema")]
+    public async Task<IActionResult> AddRus10Standart([FromBody] Rus10Standart rus10Standart)
     {
-        if (healthcareServiceSectionAccordance == null)
+        if (rus10Standart == null)
         {
             return BadRequest();
         }
-        await _context.ServiceSections.AddAsync(healthcareServiceSectionAccordance);
+        await _context.Rus10Standarts.AddAsync(rus10Standart);
         await _context.SaveChangesAsync();
-        return Ok("HealthcareServiceSectionAccordance added successfully!");
+        return Ok("Rus10Standart added successfully!");
     }
     
-    [HttpPost("ServiceBlockAccordance", Name = "GetServiceBlockAccordanceSchema")]
-    public async Task<IActionResult> AddServiceBlockAccordance([FromBody] ServiceBlockAccordance healthcareServiceBlockAccordance)
+    // Rus Esili related schemas
+    [HttpPost("Esili/Rus", Name="GetRusEsiliSchema")]
+    public async Task<IActionResult> AddRusEsili([FromBody] RusEsili rusEsili)
     {
-        if (healthcareServiceBlockAccordance == null)
+        if (rusEsili == null)
         {
             return BadRequest();
         }
-        await _context.ServiceBlocks.AddAsync(healthcareServiceBlockAccordance);
+        await _context.RusEsilis.AddAsync(rusEsili);
         await _context.SaveChangesAsync();
-        return Ok("HealthcareServiceBlockAccordance added successfully!");
+        return Ok("RusEsili added successfully!");
     }
     
-    [HttpPost("ServiceNumberAccordance", Name = "GetServiceNumberAccordanceSchema")]
-    public async Task<IActionResult> AddServiceNumberAccordance([FromBody] ServiceNumberAccordance healthcareServiceNumberAccordance)
+    [HttpPost("Esili/Rus/Section", Name = "GetRussianEsiliSectionSchema")]
+    public async Task<IActionResult> AddRusEsiliSection([FromBody] RusEsiliSection rusEsiliSection)
     {
-        if (healthcareServiceNumberAccordance == null)
+        if (rusEsiliSection == null)
         {
             return BadRequest();
         }
-        await _context.ServiceNumbers.AddAsync(healthcareServiceNumberAccordance);
+        await _context.RusEsiliSections.AddAsync(rusEsiliSection);
         await _context.SaveChangesAsync();
-        return Ok("HealthcareServiceNumberAccordance added successfully!");
+        return Ok("RusEsiliSection added successfully!");
     }
     
-    [HttpPost("Standart", Name = "GetStandartSchema")]
-    public async Task<IActionResult> AddStandart([FromBody] Standart standart)
+    [HttpPost("Esili/Rus/Block", Name = "GetRusEsiliBlockSchema")]
+    public async Task<IActionResult> AddRusEsiliBlock([FromBody] RusEsiliBlock rusEsiliBlock)
     {
-        if (standart == null)
+        if (rusEsiliBlock == null)
         {
             return BadRequest();
         }
-        await _context.Standarts.AddAsync(standart);
+        await _context.RusEsiliBlocks.AddAsync(rusEsiliBlock);
         await _context.SaveChangesAsync();
-        return Ok("Standart added successfully!");
+        return Ok("RussianEsiliBlock added successfully!");
     }
     
+    [HttpPost("Esili/Rus/Number", Name = "GetRusEsiliNumberSchema")]
+    public async Task<IActionResult> AddRusEsiliNumber([FromBody] RusEsiliNumber rusEsiliNumber)
+    {
+        if (rusEsiliNumber == null)
+        {
+            return BadRequest();
+        }
+        await _context.RusEsiliNumbers.AddAsync(rusEsiliNumber);
+        await _context.SaveChangesAsync();
+        return Ok("RusEsiliNumber added successfully!");
+    }
+    
+    // Msk Esili related schemas
+    [HttpPost("Esili/Msk", Name="GetMskEsiliSchema")]
+    public async Task<IActionResult> AddMskEsili([FromBody] MskEsili mskEsili)
+    {
+        if (mskEsili == null)
+        {
+            return BadRequest();
+        }
+        await _context.MskEsilis.AddAsync(mskEsili);
+        await _context.SaveChangesAsync();
+        return Ok("MskEsili added successfully!");
+    }
+    
+    [HttpPost("Esili/Msk/Type", Name = "GetMskEsiliTypeSchema")]
+    public async Task<IActionResult> AddMskEsiliType([FromBody] MskEsiliType mskEsiliType)
+    {
+        if (mskEsiliType == null)
+        {
+            return BadRequest();
+        }
+        await _context.MskEsiliTypes.AddAsync(mskEsiliType);
+        await _context.SaveChangesAsync();
+        return Ok("MskEsiliType added successfully!");
+    }
+    
+    // Input related schemas
     [HttpPost("UserInputRelations", Name = "GetUserInputRelationsSchema")]
     public async Task<IActionResult> AddUserInputRelations([FromBody] UserInputRelation userInputRelation)
     {

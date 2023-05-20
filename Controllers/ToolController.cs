@@ -20,177 +20,25 @@ public class ToolController: ControllerBase
         _context = context;
     }
     
-    [HttpPost("AddServices", Name = "AddServices")]
-    public async Task<IActionResult> AddSections([FromBody] List<HealthcareServiceCreation> healthcareServiceCreations)
+    // Mkb10 related tools
+    [HttpPost("Mkb10", Name = "AddMkb10s")]
+    public async Task<IActionResult> AddMkbs([FromBody] List<Mkb10Creation> mkb10Creations)
     {
-        foreach (HealthcareServiceCreation healthcareServiceCreation in healthcareServiceCreations)
+        foreach (Mkb10Creation mkb10Creation in mkb10Creations)
         {
-            HealthcareService healthcareService = Util.ParseServiceCode(healthcareServiceCreation.Code);
+            Mkb10 mkb10 = Util.ParseMKBCode(mkb10Creation.Code);
             
-            if (healthcareServiceCreation.Name != null)
+            if (mkb10Creation.Name != null)
             {
-                healthcareService.Name = healthcareServiceCreation.Name;
-            }
-
-            if (healthcareService.Subsubnumber != null)
-            {
-                HealthcareService serviceSubsubnumberAccordance = new()
-                {
-                    Section = healthcareService.Section,
-                    Block = healthcareService.Block,
-                    Number = healthcareService.Number,
-                    Subnumber = healthcareService.Subnumber,
-                    Subsubnumber = healthcareService.Subsubnumber,
-                    Name = healthcareService.Name
-                };
-                
-                await _context.HealthcareServices.AddAsync(serviceSubsubnumberAccordance);
-            }
-            else if (healthcareService.Subnumber != -1)
-            {
-                HealthcareService serviceSubnumberAccordance = new()
-                {
-                    Section = healthcareService.Section,
-                    Block = healthcareService.Block,
-                    Number = healthcareService.Number,
-                    Subnumber = healthcareService.Subnumber,
-                    Name = healthcareService.Name
-                };
-                
-                await _context.HealthcareServices.AddAsync(serviceSubnumberAccordance);
-            }
-            else if (healthcareService.Number != -1)
-            {
-                ServiceNumberAccordance serviceNumberAccordance = new()
-                {
-                    Section = healthcareService.Section,
-                    Block = healthcareService.Block,
-                    Number = healthcareService.Number,
-                    Name = healthcareService.Name
-                };
-                
-                await _context.ServiceNumbers.AddAsync(serviceNumberAccordance);
-            }
-            else if (healthcareService.Block != -1)
-            {
-                ServiceBlockAccordance serviceBlockAccordance = new()
-                {
-                    Section = healthcareService.Section,
-                    Block = healthcareService.Block,
-                    Name = healthcareService.Name
-                };
-                
-                await _context.ServiceBlocks.AddAsync(serviceBlockAccordance);
-            }
-            else
-            {
-                ServiceSectionAccordance serviceSectionAccordance = new()
-                {
-                    Section = healthcareService.Section,
-                    Name = healthcareService.Name
-                };
-                
-                await _context.ServiceSections.AddAsync(serviceSectionAccordance);
-            }
-        }
-        
-        await _context.SaveChangesAsync();
-        return Ok();
-    }
-
-    [HttpPost("AddService", Name = "AddService")]
-    public async Task<IActionResult> AddSection([FromBody] HealthcareServiceCreation healthcareServiceCreation)
-    {
-        HealthcareService healthcareService = Util.ParseServiceCode(healthcareServiceCreation.Code);
-            
-        if (healthcareServiceCreation.Name != null)
-        {
-            healthcareService.Name = healthcareServiceCreation.Name;
-        }
-
-        if (healthcareService.Subsubnumber != null)
-        {
-            HealthcareService serviceSubsubnumberAccordance = new()
-            {
-                Section = healthcareService.Section,
-                Block = healthcareService.Block,
-                Number = healthcareService.Number,
-                Subnumber = healthcareService.Subnumber,
-                Subsubnumber = healthcareService.Subsubnumber,
-                Name = healthcareService.Name
-            };
-                
-            await _context.HealthcareServices.AddAsync(serviceSubsubnumberAccordance);
-        }
-        else if (healthcareService.Subnumber != null)
-        {
-            HealthcareService serviceSubnumberAccordance = new()
-            {
-                Section = healthcareService.Section,
-                Block = healthcareService.Block,
-                Number = healthcareService.Number,
-                Subnumber = healthcareService.Subnumber,
-                Name = healthcareService.Name
-            };
-                
-            await _context.HealthcareServices.AddAsync(serviceSubnumberAccordance);
-        }
-        else if (healthcareService.Number != -1)
-        {
-            ServiceNumberAccordance serviceNumberAccordance = new()
-            {
-                Section = healthcareService.Section,
-                Block = healthcareService.Block,
-                Number = healthcareService.Number,
-                Name = healthcareService.Name
-            };
-                
-            await _context.ServiceNumbers.AddAsync(serviceNumberAccordance);
-        }
-        else if (healthcareService.Block != -1)
-        {
-            ServiceBlockAccordance serviceBlockAccordance = new()
-            {
-                Section = healthcareService.Section,
-                Block = healthcareService.Block,
-                Name = healthcareService.Name
-            };
-                
-            await _context.ServiceBlocks.AddAsync(serviceBlockAccordance);
-        }
-        else
-        {
-            ServiceSectionAccordance serviceSectionAccordance = new()
-            {
-                Section = healthcareService.Section,
-                Name = healthcareService.Name
-            };
-                
-            await _context.ServiceSections.AddAsync(serviceSectionAccordance);
-        }
-        
-        await _context.SaveChangesAsync();
-        return Ok();
-    }
-    
-    [HttpPost("AddMKBs", Name = "AddMKBs")]
-    public async Task<IActionResult> AddMKBs([FromBody] List<MKB10Creation> mkb10Creations)
-    {
-        foreach (MKB10Creation mkb10creation in mkb10Creations)
-        {
-            Mkb10 mkb10 = Util.ParseMKBCode(mkb10creation.Code);
-            
-            if (mkb10creation.Name != null)
-            {
-                mkb10.Name = mkb10creation.Name;   
+                mkb10.Name = mkb10Creation.Name;   
             }
             if (mkb10.Subnumber != null)
             {
-                _context.MKB10s.AddAsync(mkb10);
+                _context.Mkb10s.AddAsync(mkb10);
             }
             else if (mkb10.Number != -1)
             {
-                _context.MKB10s.AddAsync(mkb10);
+                _context.Mkb10s.AddAsync(mkb10);
             }
         }
         
@@ -198,43 +46,21 @@ public class ToolController: ControllerBase
         return Ok();
     }
     
-    [HttpPost("AddMKB", Name = "AddMKB")]
-    public async Task<IActionResult> AddMKB([FromBody] MKB10Creation mkb10Creation)
+    [HttpPost("Mkb10/Standart/Rus", Name = "AddRus10Standarts")]
+    public async Task<IActionResult> AdRus10dStandarts([FromBody] Rus10StandartCreation rus10StandartCreation)
     {
-        Mkb10 mkb10 = Util.ParseMKBCode(mkb10Creation.Code);
-        if (mkb10Creation.Name != null)
+        foreach (string mkbcode in rus10StandartCreation.Mkb10Codes)
         {
-            mkb10.Name = mkb10Creation.Name;   
-        }
-        if (mkb10.Subnumber != null)
-        {
-            _context.MKB10s.AddAsync(mkb10);
-        }
-        else if (mkb10.Number != -1)
-        {
-            _context.MKB10s.AddAsync(mkb10);
-        }
-
-        await _context.SaveChangesAsync();
-        return Ok();
-    }
-    
-    
-    [HttpPost("AddStandart", Name = "AddStandart")]
-    public async Task<IActionResult> AddStandart([FromBody] StandartCreation standartCreation)
-    {
-        foreach (string mkbcode in standartCreation.Mkb10Codes)
-        {
-            foreach (HealthcareServiceWithBool serviceWBool in standartCreation.ServiceCodesWithBools)
+            foreach (Rus10EsiliWithProb codeWProb in rus10StandartCreation.RusEsiliCodesWithProbs)
             {
-                Standart standart = new()
+                Rus10Standart rus10Standart = new()
                 {
                     Id = Guid.NewGuid(),
                     Mkb10Code = mkbcode,
-                    HealthcareServiceCode = serviceWBool.HealthcareServiceCode,
-                    IsMandatory = serviceWBool.IsMandatory
+                    RusEsiliCode = codeWProb.RusEsiliCode,
+                    Probability = codeWProb.Probability
                 };
-                await _context.Standarts.AddAsync(standart);
+                await _context.Rus10Standarts.AddAsync(rus10Standart);
             }
         }
         
@@ -243,41 +69,160 @@ public class ToolController: ControllerBase
         return Ok();
     }
     
-    [HttpGet("Standarts", Name = "GetStandarts")]
-    public async Task<IActionResult> GetStandarts([FromQuery] string code, int limit = 10)
+    [HttpPost("Mkb10/Standart/Msk", Name = "AddMsk10Standarts")]
+    public async Task<IActionResult> AddMsk10Standarts([FromBody] Msk10StandartCreation msk10StandartCreation)
     {
-        List<Standart> query = await _context.Standarts
-            .Where(s => s.Mkb10Code == code)
-            .ToListAsync();
-        
-        if (query == null)
+        foreach (string mkbcode in msk10StandartCreation.Mkb10Codes)
         {
-            return NotFound();
-        }
-
-        List<HealthcareServiceWithBool> serviceWBools = new List<HealthcareServiceWithBool>();
-        
-        foreach (Standart standart in query)
-        {
-            HealthcareServiceWithBool service = new()
+            foreach (Msk10EsiliWithBool codeWBool in msk10StandartCreation.Msk10EsiliWithBools)
             {
-                HealthcareServiceCode = standart.HealthcareServiceCode,
-                IsMandatory = standart.IsMandatory
-            };
-            serviceWBools.Add(service);
+                Msk10Standart msk10Standart = new()
+                {
+                    Id = Guid.NewGuid(),
+                    Mkb10Code = mkbcode,
+                    MskEsiliCode = codeWBool.MskEsiliCode,
+                    IsMandatory = codeWBool.IsMandatory
+                };
+                await _context.Msk10Standarts.AddAsync(msk10Standart);
+            }
         }
-
-        StandartRead result = new StandartRead()
-        {
-            Mkb10Code = code,
-            HealthcareServiceCodesWithBools = serviceWBools
-        };
         
-        if (result != null)
-        {
-            return Ok(result);
-        }
+        await _context.SaveChangesAsync();
 
+        return Ok();
+    }
+    
+    [HttpGet("Mkb10/Standart", Name = "GetStandartsByCode")]
+    public async Task<IActionResult> GetStandarts([FromQuery] string code, string local = "Msk", int limit = 10)
+    {
+        if (local == "Msk")
+        {
+            List<Msk10Standart> query = await _context.Msk10Standarts
+                .Where(s => s.Mkb10Code == code)
+                .ToListAsync();
+
+            if (query == null)
+            {
+                return NotFound();
+            }
+
+            List<Msk10EsiliWithBool> serviceWBools = new List<Msk10EsiliWithBool>();
+
+            foreach (Msk10Standart standart in query)
+            {
+                Msk10EsiliWithBool service = new()
+                {
+                    MskEsiliCode = standart.MskEsiliCode,
+                    IsMandatory = standart.IsMandatory
+                };
+                serviceWBools.Add(service);
+            }
+
+            Msk10StandartRead result = new Msk10StandartRead()
+            {
+                Mkb10Code = code,
+                Msk10EsiliWithBools = serviceWBools
+            };
+            if (result != null) return Ok(result);
+        }
+        else if (local == "Rus") 
+        {
+            List<Rus10Standart> query = await _context.Rus10Standarts
+                .Where(s => s.Mkb10Code == code)
+                .ToListAsync();
+
+            if (query == null)
+            {
+                return NotFound();
+            }
+
+            List<Rus10EsiliWithProb> serviceWProbs = new List<Rus10EsiliWithProb>();
+
+            foreach (Rus10Standart standart in query)
+            {
+                Rus10EsiliWithProb service = new()
+                {
+                    RusEsiliCode = standart.RusEsiliCode,
+                    Probability = standart.Probability
+                };
+                serviceWProbs.Add(service);
+            }
+
+            Rus10StandartRead result = new Rus10StandartRead()
+            {
+                Mkb10Code = code,
+                RusEsiliCodesWithProbs = serviceWProbs
+            };
+            if (result != null) return Ok(result);
+        }
         return NotFound();
     }
+
+    [HttpGet("Mkb10/Standart/All", Name = "GetAllStandarts")]
+    public async Task<IActionResult> GetAllStandarts([FromQuery] string local = "Msk", int limit = 50)
+    {
+        if (local == "Msk")
+        {
+            List<Msk10Standart> query = await _context.Msk10Standarts
+                .ToListAsync();
+
+            if (query == null)
+            {
+                return NotFound();
+            }
+
+            List<Msk10StandartRead> result = new List<Msk10StandartRead>();
+
+            foreach (Msk10Standart standart in query)
+            {
+                Msk10StandartRead service = new Msk10StandartRead()
+                {
+                    Mkb10Code = standart.Mkb10Code,
+                    Msk10EsiliWithBools = new List<Msk10EsiliWithBool>()
+                    {
+                        new Msk10EsiliWithBool()
+                        {
+                            MskEsiliCode = standart.MskEsiliCode,
+                            IsMandatory = standart.IsMandatory
+                        }
+                    }
+                };
+                result.Add(service);
+            }
+            if (result != null) return Ok(result);
+        }
+        else if (local == "Rus") 
+        {
+            List<Rus10Standart> query = await _context.Rus10Standarts
+                .ToListAsync();
+
+            if (query == null)
+            {
+                return NotFound();
+            }
+
+            List<Rus10StandartRead> result = new List<Rus10StandartRead>();
+
+            foreach (Rus10Standart standart in query)
+            {
+                Rus10StandartRead service = new Rus10StandartRead()
+                {
+                    Mkb10Code = standart.Mkb10Code,
+                    RusEsiliCodesWithProbs = new List<Rus10EsiliWithProb>()
+                    {
+                        new Rus10EsiliWithProb()
+                        {
+                            RusEsiliCode = standart.RusEsiliCode,
+                            Probability = standart.Probability
+                        }
+                    }
+                };
+                result.Add(service);
+            }
+            if (result != null) return Ok(result);
+        }
+        return NotFound();
+    }
+    
+    
 }

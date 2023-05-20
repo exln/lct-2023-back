@@ -60,7 +60,7 @@ namespace MediWingWebAPI.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "MKB10s",
+                name: "Mkb10s",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
@@ -73,7 +73,7 @@ namespace MediWingWebAPI.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_MKB10s", x => x.Id);
+                    table.PrimaryKey("PK_Mkb10s", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -207,7 +207,7 @@ namespace MediWingWebAPI.Migrations
                 name: "HealthcareServices");
 
             migrationBuilder.DropTable(
-                name: "MKB10s");
+                name: "Mkb10s");
 
             migrationBuilder.DropTable(
                 name: "Patients");

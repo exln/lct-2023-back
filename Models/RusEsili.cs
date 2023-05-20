@@ -3,7 +3,7 @@
 namespace MediWingWebAPI.Models;
 
 [PrimaryKey("Id")]
-public class HealthcareService
+public class RusEsili
 {
     public int Id { get; set; }
     public char Section { get; set; }
@@ -14,26 +14,26 @@ public class HealthcareService
     public string Name { get; set; }
 }
 
-public class HealthcareServiceRead
+public class RusEsiliRead
 {
     public string Code { get; set; }
     public string Name { get; set; }
 }
 
-public class HealthcareServiceCreation
+public class RusEsiliCreation
 {
     public string Code { get; set; }
     public string Name { get; set; }
 }
 
-public class HealthcareServiceUpdate
+public class RusEsiliUpdate
 {
     public string Code { get; set; }
     public string Name { get; set; }
 }
 
 [PrimaryKey("Id")]
-public class ServiceSectionAccordance
+public class RusEsiliSection
 {
     public int Id { get; set; }
     public char Section { get; set; }
@@ -41,7 +41,7 @@ public class ServiceSectionAccordance
 }
 
 [PrimaryKey("Id")]
-public class ServiceBlockAccordance
+public class RusEsiliBlock
 {
     public int Id { get; set; }
     public char Section { get; set; }
@@ -49,8 +49,9 @@ public class ServiceBlockAccordance
     public string Name { get; set; }
 }
 
+// TODO Заполинть базу данных
 [PrimaryKey("Id")]
-public class ServiceNumberAccordance
+public class RusEsiliNumber
 {
     public int Id { get; set; }
     public char Section { get; set; }

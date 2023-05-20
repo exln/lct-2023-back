@@ -6,7 +6,7 @@ namespace MediWingWebAPI.Utils;
 
 public class Utilitas
 {
-    public static HealthcareService ParseServiceCode(string code)
+    public static RusEsili ParseServiceCode(string code)
     {
         char section = ' ';
         int block = -1;
@@ -24,7 +24,7 @@ public class Utilitas
             subsubnumber = match.Groups[5].Success ? int.Parse(match.Groups[5].Value) : null;
         }
         
-        HealthcareService service = new()
+        RusEsili service = new()
         {
             Section = section,
             Block = block,
@@ -166,14 +166,14 @@ public class Utilitas
         IQueryable<Mkb10> resultData;
         if (searchMkb10.Subnumber == null)
         {
-            resultData = from mkb10 in _context.MKB10s
+            resultData = from mkb10 in _context.Mkb10s
                 where mkb10.Litera == searchMkb10.Litera && mkb10.Number == searchMkb10.Number &&
                       mkb10.Subnumber == null
                 select mkb10;
         }
         else
         {
-            resultData = from mkb10 in _context.MKB10s
+            resultData = from mkb10 in _context.Mkb10s
                 where mkb10.Litera == searchMkb10.Litera && mkb10.Number == searchMkb10.Number &&
                       mkb10.Subnumber == searchMkb10.Subnumber
                 select mkb10;
@@ -182,12 +182,12 @@ public class Utilitas
         return resultData.FirstOrDefault();
     }
 
-    public static HealthcareService SeatchHealthcareService(ApiDbContext _context, HealthcareService searchService)
+    public static RusEsili SeatchHealthcareService(ApiDbContext _context, RusEsili searchService)
     {
-        IQueryable<HealthcareService> resultData;
+        IQueryable<RusEsili> resultData;
         if (searchService.Subsubnumber == null)
         {
-            resultData = from service in _context.HealthcareServices
+            resultData = from service in _context.RusEsilis
                 where service.Section == searchService.Section && service.Block == searchService.Block &&
                       service.Number == searchService.Number && service.Subnumber == searchService.Subnumber &&
                       service.Subsubnumber == null
@@ -195,7 +195,7 @@ public class Utilitas
         }
         else
         {
-            resultData = from service in _context.HealthcareServices
+            resultData = from service in _context.RusEsilis
                 where service.Section == searchService.Section && service.Block == searchService.Block &&
                       service.Number == searchService.Number && service.Subnumber == searchService.Subnumber &&
                       service.Subsubnumber == searchService.Subsubnumber

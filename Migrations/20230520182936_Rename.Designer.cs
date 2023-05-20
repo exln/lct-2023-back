@@ -3,6 +3,7 @@ using System;
 using MediWingWebAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MediWingWebAPI.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    partial class ApiDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230520182936_Rename")]
+    partial class Rename
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -77,7 +80,7 @@ namespace MediWingWebAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Mkb10s");
+                    b.ToTable("MKB10s");
                 });
 
             modelBuilder.Entity("MediWingWebAPI.Models.Mkb10Chapter", b =>
@@ -102,7 +105,7 @@ namespace MediWingWebAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Mkb10Chapters");
+                    b.ToTable("MKB10Chapters");
                 });
 
             modelBuilder.Entity("MediWingWebAPI.Models.Msk10Standart", b =>

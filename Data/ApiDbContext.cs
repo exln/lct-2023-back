@@ -15,20 +15,31 @@ public class ApiDbContext: DbContext
         throw new NotImplementedException();
     }
 
-
+    // Account related
     public DbSet<User> Users { get; set; }
     public DbSet<Staff> Staffs { get; set; }
     public DbSet<Patient> Patients { get; set; }
     public DbSet<Assignment> Assignments { get; set; }
-    public DbSet<Mkb10> MKB10s { get; set; }
-    public DbSet<HealthcareService> HealthcareServices { get; set; }
+
+    //RusEsili
+    public DbSet<RusEsili> RusEsilis { get; set; }
+    public DbSet<RusEsiliSection> RusEsiliSections { get; set; }
+    public DbSet<RusEsiliBlock> RusEsiliBlocks { get; set; }
+    public DbSet<RusEsiliNumber> RusEsiliNumbers { get; set; }
     
-    //Services
-    public DbSet<Standart> Standarts { get; set; }
-    public DbSet<ChapterAccordance> Chapters { get; set; }
-    public DbSet<ServiceSectionAccordance> ServiceSections { get; set; }
-    public DbSet<ServiceBlockAccordance> ServiceBlocks { get; set; }
-    public DbSet<ServiceNumberAccordance> ServiceNumbers { get; set; }
+    //MskEsili
+    public DbSet<MskEsili> MskEsilis { get; set; }
+    public DbSet<MskEsiliType> MskEsiliTypes { get; set; }
+
+    //MKB10
+    public DbSet<Mkb10> Mkb10s { get; set; }
+    public DbSet<Mkb10Chapter> Mkb10Chapters { get; set; }
+    
+    //MKB10 Standarts
+    public DbSet<Msk10Standart> Msk10Standarts { get; set; }
+    public DbSet<Rus10Standart> Rus10Standarts { get; set; }
+
+    //MKB11 TODO
     
     //Inputs
     public DbSet<UserInputRelation> UserInputRelations { get; set; }

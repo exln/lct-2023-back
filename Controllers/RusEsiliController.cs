@@ -9,20 +9,20 @@ namespace MediWingWebAPI.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class HealthcareServiceController: Controller
+public class RusEsiliController: Controller
 {
-    private readonly ILogger<HealthcareServiceController> _logger;
+    private readonly ILogger<RusEsiliController> _logger;
     private readonly ApiDbContext _context;
 
-    public HealthcareServiceController(
-        ILogger<HealthcareServiceController> logger,
+    public RusEsiliController(
+        ILogger<RusEsiliController> logger,
         ApiDbContext context)
     {
         _logger = logger;
         _context = context;
     }
 
-    [HttpGet(Name = "GetServiceInfo")]
+    [HttpGet(Name = "GetInfoByRusEsiliCode")]
     public async Task<IActionResult> SearchServices([FromQuery] string code, int limit = 10)
     {
         int typeCode;
@@ -43,14 +43,14 @@ public class HealthcareServiceController: Controller
 
         if (typeCode == 0)
         {
-            List<ServiceSectionAccordance> accordances = await _context.ServiceSections
+            List<RusEsiliSection> accordances = await _context.RusEsiliSections
                 .Where(a => a.Section == section)
                 .ToListAsync();
             return !accordances.IsNullOrEmpty() ? Ok(accordances.Take(limit).ToList()) : NotFound();
         }
         if (typeCode == 1)
         {
-            List<ServiceBlockAccordance> accordances = await _context.ServiceBlocks
+            List<RusEsiliBlock> accordances = await _context.RusEsiliBlocks
                 .Where(a => a.Section == section)
                 .Where(a => a.Block == block)
                 .ToListAsync();
@@ -58,7 +58,7 @@ public class HealthcareServiceController: Controller
         }
         if (typeCode == 2)
         {
-            List<ServiceNumberAccordance> accordances = await _context.ServiceNumbers
+            List<RusEsiliNumber> accordances = await _context.RusEsiliNumbers
                 .Where(a => a.Section == section)
                 .Where(a => a.Block == block)
                 .Where(a => a.Number == number)
@@ -67,7 +67,7 @@ public class HealthcareServiceController: Controller
         }
         if (typeCode == 3 | typeCode == 4)
         {
-            List<HealthcareService> accordances = await _context.HealthcareServices
+            List<RusEsili> accordances = await _context.RusEsilis
                 .Where(a => a.Section == section)
                 .Where(a => a.Block == block)
                 .Where(a => a.Number == number)
@@ -80,10 +80,10 @@ public class HealthcareServiceController: Controller
         return BadRequest();
     }
 
-    [HttpGet("Care", Name = "SearchCares")]
+    [HttpGet("RusEsili", Name = "SearchInRusEsili")]
     public async Task<IActionResult> SearchHealthcareServices([FromQuery] string search, int limit = 10)
     {
-        IQueryable <HealthcareService> query = _context.HealthcareServices;
+        IQueryable <RusEsili> query = _context.RusEsilis;
         Regex pattern =
             new Regex(@"^([\p{L}]{3,})?([A-Za-z]+)(?:(\d{1,2}))?(?:\.(\d{1,3}))?(?:\.(\d{1,3}))?(?:\.(\d{1,3}))?$");
         Match match = pattern.Match(search);

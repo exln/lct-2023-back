@@ -11,13 +11,13 @@ namespace MediWingWebAPI.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class MKB10Controller: ControllerBase
+public class Mkb10Controller: ControllerBase
 {
-    private readonly ILogger<MKB10Controller> _logger;
+    private readonly ILogger<Mkb10Controller> _logger;
     private readonly ApiDbContext _context;
 
-    public MKB10Controller(
-        ILogger<MKB10Controller> logger,
+    public Mkb10Controller(
+        ILogger<Mkb10Controller> logger,
         ApiDbContext context)
     {
         _logger = logger;
@@ -27,7 +27,7 @@ public class MKB10Controller: ControllerBase
     /*[HttpGet(Name = "GetMKB10s")]
     public async Task<IActionResult> GetMKB10s()
     {
-        List<Mkb10> mkb10s = await _context.MKB10s.ToListAsync();
+        List<Mkb10> mkb10s = await _context.Mkb10s.ToListAsync();
         List<MKB10Read> mkb10Reads = new();
         foreach (Mkb10 mkb10 in mkb10s)
         {
@@ -55,7 +55,7 @@ public class MKB10Controller: ControllerBase
     }*
 
     /*[HttpPut("{code}", Name = "UpdateMKB10")]
-    public async Task<IActionResult> UpdateMKB10(string code, [FromBody] MKB10Update mkb10Update)
+    public async Task<IActionResult> UpdateMKB10(string code, [FromBody] Mkb10Update mkb10Update)
     {
         Mkb10 mkb10 = SearchMKB10(_context, ParseMKB10(code));
         
@@ -80,13 +80,13 @@ public class MKB10Controller: ControllerBase
             return NotFound();
         }
         
-        _context.MKB10s.Remove(mkb10);
+        _context.Mkb10s.Remove(mkb10);
         await _context.SaveChangesAsync();
         
         return Ok();
     }*/
 
-    [HttpGet(Name = "GetCodeInfo")]
+    [HttpGet(Name = "GetInfoByMkb10Code")]
     public async Task<IActionResult> GetCodeInfo([FromQuery] string code, int limit = 10)
     {
         int codeType;
@@ -105,7 +105,7 @@ public class MKB10Controller: ControllerBase
 
         if (codeType == 2)
         {
-            results = await _context.MKB10s
+            results = await _context.Mkb10s
                 .Where(m => m.Litera == litera)
                 .Where(m => m.Number == number)
                 .Where(m => m.Subnumber == subnumber)
@@ -113,7 +113,7 @@ public class MKB10Controller: ControllerBase
         }
         else if (codeType == 1) 
         { 
-            results = await _context.MKB10s
+            results = await _context.Mkb10s
             .Where(m => m.Litera == litera)
             .Where(m => m.Number == number)
             .Where(m => m.Subnumber == null)
@@ -121,7 +121,7 @@ public class MKB10Controller: ControllerBase
         }
         else if (codeType == 0)
         {
-            results = await _context.MKB10s
+            results = await _context.Mkb10s
                 .Where(m => m.Litera == litera)
                 .ToListAsync();
         }
@@ -129,11 +129,11 @@ public class MKB10Controller: ControllerBase
         return !results.IsNullOrEmpty() ? Ok(results.Take((int)limit).ToList()) : NotFound();
     }
     
-    [HttpGet("Diagnosis", Name="SearchMKB10")]
+    [HttpGet("Diagnosis", Name="SearchInMkb10Diagnosis")]
     //public async Task<IActionResult> SearchMkb10([FromQuery] char? litera, string? chapter, int? number, int? subnumber, string? name, int limit = 10)
     public async Task<IActionResult> SearchMkb10([FromQuery] string search, int limit = 10)
     {
-        IQueryable<Mkb10> query = _context.MKB10s;
+        IQueryable<Mkb10> query = _context.Mkb10s;
         Regex pattern = new Regex(@"^([\p{L}]{3,})?([A-Za-z])?(\d+)?(?:\.(\d+))?$");
         Match match = pattern.Match(search);
         

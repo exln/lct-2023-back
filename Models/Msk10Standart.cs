@@ -3,35 +3,35 @@
 namespace MediWingWebAPI.Models;
 
 [PrimaryKey("Id")]
-public class Standart
+public class Msk10Standart
 {
     public Guid Id { get; set; }
-    public string HealthcareServiceCode { get; set; }
+    public string MskEsiliCode { get; set; }
     public string Mkb10Code { get; set; }
     public bool IsMandatory { get; set; }
 }
 
-public class StandartRead
+public class Msk10StandartRead
 {
     public string Mkb10Code { get; set; }
-    public List<HealthcareServiceWithBool> HealthcareServiceCodesWithBools { get; set; }
+    public List<Msk10EsiliWithBool> Msk10EsiliWithBools { get; set; }
 }
 
-public class StandartCreation
+public class Msk10StandartCreation
 {
-    public List<HealthcareServiceWithBool> ServiceCodesWithBools { get; set; }
+    public List<Msk10EsiliWithBool> Msk10EsiliWithBools { get; set; }
     public List<string> Mkb10Codes { get; set; }
 }
 
-public class HealthcareServiceWithBool
+public class Msk10EsiliWithBool
 {
-    public string HealthcareServiceCode { get; set; }
+    public string MskEsiliCode { get; set; }
     public bool IsMandatory { get; set; }
 }
 
 public class StandartUpdate
 {
-    public string HealthcareServiceCode { get; set; }
+    public string Msk10EsiliCode { get; set; }
     public string Mkb10Code { get; set; }
     public bool IsMandatory { get; set; }
 }

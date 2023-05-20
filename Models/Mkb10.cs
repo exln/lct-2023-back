@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-// TODO: Переименовать все в Mkb10+что-то
+
 namespace MediWingWebAPI.Models;
+
 [PrimaryKey("Id")]
 public class Mkb10
 {
@@ -12,27 +13,28 @@ public class Mkb10
     public string Name { get; set; }
 }
 
-public class MKB10Read
+public class Mkb10Read
 {
     public string Code { get; set; }
     public string Name { get; set; }
 }
 
-public class MKB10Creation
+public class Mkb10Creation
 {
     public string Code { get; set; }
     public string Name { get; set; }
 }
 
-public class MKB10Update
+public class Mkb10Update
 {
     public string Code { get; set; }
     public string Name { get; set; }
 }
 
-[PrimaryKey("Name")]
-public class ChapterAccordance
+[PrimaryKey("Id")]
+public class Mkb10Chapter
 {
+    public int Id { get; set; }
     public string Chapter { get; set; }
     public string Sub { get; set; }
     public string Name { get; set; }
