@@ -36,8 +36,7 @@ public class ApiDbContext: DbContext
     public DbSet<Mkb10Chapter> Mkb10Chapters { get; set; }
     
     //MKB10 Standarts
-    public DbSet<Msk10Standart> Msk10Standarts { get; set; }
-    public DbSet<Rus10Standart> Rus10Standarts { get; set; }
+    public DbSet<Mkb10Standart> Mkb10Standarts { get; set; }
 
     //MKB11 TODO
     
@@ -45,11 +44,14 @@ public class ApiDbContext: DbContext
     public DbSet<UserInputRelation> UserInputRelations { get; set; }
     public DbSet<UserDiagnosticInput> UserDiagnosticInputs { get; set; }
     
+    
+    public DbSet<Clinic> Clinics { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<User>()
-            .HasOne(e => e.Staff)
-            .WithOne(e => e.User)
-            .HasForeignKey<Staff>(e => e.UserId);
+        modelBuilder.Entity<Staff>()
+            .HasOne<User>(s => s.User)
+            .WithOne(u => u.Staff)
+            .HasForeignKey<User>(u => u.StaffId);
+        
     }
 }

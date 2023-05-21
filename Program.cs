@@ -28,7 +28,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseRouting(); // Add UseRouting before UseCors 
-app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyMethod()); // Allow all origins and methods for CORS 
+app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyMethod().WithExposedHeaders("content-disposition").WithHeaders("content-type"));; // Allow all origins and methods for CORS 
+app.UsePathBase(pathBase: "/api"); // Add UsePathBase here
 
 app.UseAuthorization();
 

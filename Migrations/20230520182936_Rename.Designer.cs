@@ -80,7 +80,7 @@ namespace MediWingWebAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("MKB10s");
+                    b.ToTable("Mkb10s");
                 });
 
             modelBuilder.Entity("MediWingWebAPI.Models.Mkb10Chapter", b =>

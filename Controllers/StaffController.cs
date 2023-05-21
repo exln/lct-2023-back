@@ -1,4 +1,4 @@
-﻿using MediWingWebAPI.Data;
+﻿/*using MediWingWebAPI.Data;
 using MediWingWebAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 namespace MediWingWebAPI.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("[controller]")]
 public class StaffController : Controller
 {
     private readonly ILogger<StaffController> _logger;
@@ -49,4 +49,4 @@ public class StaffController : Controller
         await _context.SaveChangesAsync();
         return CreatedAtAction(nameof(GetStaffById), new { id = staff.Id }, staff);
     }
-}
+}*/

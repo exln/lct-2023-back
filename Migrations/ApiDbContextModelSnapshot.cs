@@ -50,6 +50,54 @@ namespace MediWingWebAPI.Migrations
                     b.ToTable("Assignments");
                 });
 
+            modelBuilder.Entity("MediWingWebAPI.Models.Clinic", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("DiffName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Filial")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<float>("RateGeneral")
+                        .HasColumnType("real");
+
+                    b.Property<float>("RateKind")
+                        .HasColumnType("real");
+
+                    b.Property<float>("RatePatient")
+                        .HasColumnType("real");
+
+                    b.Property<float>("RateProfes")
+                        .HasColumnType("real");
+
+                    b.Property<float>("RateRespect")
+                        .HasColumnType("real");
+
+                    b.Property<float>("RateTeam")
+                        .HasColumnType("real");
+
+                    b.Property<float>("RateTrust")
+                        .HasColumnType("real");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Clinics");
+                });
+
             modelBuilder.Entity("MediWingWebAPI.Models.Mkb10", b =>
                 {
                     b.Property<int>("Id")
@@ -105,11 +153,15 @@ namespace MediWingWebAPI.Migrations
                     b.ToTable("Mkb10Chapters");
                 });
 
-            modelBuilder.Entity("MediWingWebAPI.Models.Msk10Standart", b =>
+            modelBuilder.Entity("MediWingWebAPI.Models.Mkb10Standart", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
+
+                    b.Property<string>("EsiliName")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<bool>("IsMandatory")
                         .HasColumnType("boolean");
@@ -118,13 +170,9 @@ namespace MediWingWebAPI.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("MskEsiliCode")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
 
-                    b.ToTable("Msk10Standarts");
+                    b.ToTable("Mkb10Standarts");
                 });
 
             modelBuilder.Entity("MediWingWebAPI.Models.MskEsili", b =>
@@ -230,28 +278,6 @@ namespace MediWingWebAPI.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Patients");
-                });
-
-            modelBuilder.Entity("MediWingWebAPI.Models.Rus10Standart", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Mkb10Code")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<float>("Probability")
-                        .HasColumnType("real");
-
-                    b.Property<string>("RusEsiliCode")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Rus10Standarts");
                 });
 
             modelBuilder.Entity("MediWingWebAPI.Models.RusEsili", b =>
@@ -361,13 +387,7 @@ namespace MediWingWebAPI.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("UserId")
-                        .IsUnique();
 
                     b.ToTable("Staffs");
                 });
@@ -398,6 +418,9 @@ namespace MediWingWebAPI.Migrations
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("StaffId")
+                        .IsUnique();
 
                     b.ToTable("Users");
                 });
@@ -465,15 +488,15 @@ namespace MediWingWebAPI.Migrations
                         .HasForeignKey("MskEsiliId");
                 });
 
-            modelBuilder.Entity("MediWingWebAPI.Models.Staff", b =>
+            modelBuilder.Entity("MediWingWebAPI.Models.User", b =>
                 {
-                    b.HasOne("MediWingWebAPI.Models.User", "User")
-                        .WithOne("Staff")
-                        .HasForeignKey("MediWingWebAPI.Models.Staff", "UserId")
+                    b.HasOne("MediWingWebAPI.Models.Staff", "Staff")
+                        .WithOne("User")
+                        .HasForeignKey("MediWingWebAPI.Models.User", "StaffId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("User");
+                    b.Navigation("Staff");
                 });
 
             modelBuilder.Entity("MediWingWebAPI.Models.MskEsili", b =>
@@ -481,9 +504,9 @@ namespace MediWingWebAPI.Migrations
                     b.Navigation("Analogs");
                 });
 
-            modelBuilder.Entity("MediWingWebAPI.Models.User", b =>
+            modelBuilder.Entity("MediWingWebAPI.Models.Staff", b =>
                 {
-                    b.Navigation("Staff");
+                    b.Navigation("User");
                 });
 #pragma warning restore 612, 618
         }

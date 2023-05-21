@@ -1,4 +1,4 @@
-﻿using System.Security.Claims;
+﻿/*using System.Security.Claims;
 using System.Security.Cryptography;
 using MediWingWebAPI.Data;
 using MediWingWebAPI.Models;
@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 namespace MediWingWebAPI.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("[controller]")]
 public class UserController : ControllerBase
 {
     private readonly ILogger<UserController> _logger;
@@ -42,11 +42,6 @@ public class UserController : ControllerBase
         return Ok(user);
     }
     
-    [HttpPost("Add", Name = "AddUser")]
-    public async Task<IActionResult> GetUserById([FromBody] User user)
-    {
-        return Ok(user);
-    }
     
     /*
     [HttpGet("Me", Name = "GetAuthenticatedUser")]
@@ -60,5 +55,5 @@ public class UserController : ControllerBase
             return NotFound();
         }
         return Ok(user);
-    }*/
-}
+    }#1#
+}*/

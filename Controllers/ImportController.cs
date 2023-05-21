@@ -11,7 +11,7 @@ using OfficeOpenXml;
 namespace MediWingWebAPI.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("[controller]")]
 public class ImportController : Controller
 {
     private readonly ILogger<ImportController> _logger;
@@ -26,6 +26,8 @@ public class ImportController : Controller
     }
 
     [HttpPost(Name = "ImportXLSX")]
+    [ProducesResponseType(typeof(UserInputRelation), 200)]
+    [ProducesResponseType(typeof(string), 400)]
     public async Task<IActionResult> ImportXLSX(IFormFile? file)
     {
         // Проверяем, что файл был успешно загружен

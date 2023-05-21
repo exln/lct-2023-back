@@ -6,7 +6,7 @@ namespace MediWingWebAPI.Utils;
 
 public class Utilitas
 {
-    public static RusEsili ParseServiceCode(string code)
+    public static RusEsili ParseRusEsiliCode(string code)
     {
         char section = ' ';
         int block = -1;
@@ -36,7 +36,7 @@ public class Utilitas
         return service;
     }
 
-    public static Mkb10 ParseMKBCode(string code)
+    public static Mkb10 ParseMkb10Code(string code)
     {
         string chapter = "1";
         char litera = ' ';
@@ -49,7 +49,7 @@ public class Utilitas
             litera = char.ToUpper(match.Groups[1].Value[0]);
             num = match.Groups[2].Success ? (int.Parse(match.Groups[2].Value)) : -1 ;
             subnum = match.Groups[3].Success ? int.Parse(match.Groups[3].Value) : null;
-            chapter = ParseMKB10Chapter(litera, num);
+            chapter = ParseMkb10Chapter(litera, num);
         }
         
 
@@ -64,7 +64,7 @@ public class Utilitas
         return mkb;
     }
     
-    public static string ParseMKB10Chapter(char litera, int number)
+    public static string ParseMkb10Chapter(char litera, int number)
     {
         string str = null;
         if (litera == 'A' || litera == 'B') 
@@ -161,7 +161,7 @@ public class Utilitas
         return str;
     }
     
-    public static Mkb10 SearchMKB10(ApiDbContext _context, Mkb10 searchMkb10)
+    public static Mkb10 SearchMkb10(ApiDbContext _context, Mkb10 searchMkb10)
     {
         IQueryable<Mkb10> resultData;
         if (searchMkb10.Subnumber == null)
@@ -182,7 +182,7 @@ public class Utilitas
         return resultData.FirstOrDefault();
     }
 
-    public static RusEsili SeatchHealthcareService(ApiDbContext _context, RusEsili searchService)
+    public static RusEsili SearchRusEsili(ApiDbContext _context, RusEsili searchService)
     {
         IQueryable<RusEsili> resultData;
         if (searchService.Subsubnumber == null)

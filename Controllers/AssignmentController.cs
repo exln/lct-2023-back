@@ -1,4 +1,5 @@
-﻿using MediWingWebAPI.Data;
+﻿/*
+using MediWingWebAPI.Data;
 using MediWingWebAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -6,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace MediWingWebAPI.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("[controller]")]
 public class AssignmentController : ControllerBase
 {
     private readonly ILogger<AssignmentController> _logger;
@@ -101,3 +102,4 @@ public class AssignmentController : ControllerBase
         return Ok("Task deleted successfully!");
     }
 }
+*/

@@ -1,7 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 using MediWingWebAPI.Data;
 using MediWingWebAPI.Models;
-using MediWingWebAPI.Utils;
+using Util = MediWingWebAPI.Utils.Utilitas;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -10,7 +10,7 @@ namespace MediWingWebAPI.Controllers;
 
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("[controller]")]
 public class Mkb10Controller: ControllerBase
 {
     private readonly ILogger<Mkb10Controller> _logger;
@@ -22,6 +22,132 @@ public class Mkb10Controller: ControllerBase
     {
         _logger = logger;
         _context = context;
+    }
+    
+    // Mkb10 related tools
+    [HttpPost(Name = "AddMkb10s")]
+    [ProducesResponseType(typeof(string), 200)]
+    [ProducesResponseType(typeof(string), 400)]
+    public async Task<IActionResult> AddMkbs([FromBody] List<Mkb10Creation> mkb10Creations)
+    {
+        foreach (Mkb10Creation mkb10Creation in mkb10Creations)
+        {
+            Mkb10 mkb10 = Util.ParseMkb10Code(mkb10Creation.Code);
+
+            if (mkb10Creation.Name != null)
+            {
+                mkb10.Name = mkb10Creation.Name;
+            }
+
+            if (mkb10.Subnumber != null)
+            {
+                _context.Mkb10s.AddAsync(mkb10);
+            }
+            else if (mkb10.Number != -1)
+            {
+                _context.Mkb10s.AddAsync(mkb10);
+            }
+        }
+
+        await _context.SaveChangesAsync();
+        return Ok("Mkb10s added successfully");
+    }
+    
+    [HttpPost("Standart", Name = "AddStandarts")]
+    [ProducesResponseType(typeof(string), 200)]
+    [ProducesResponseType(typeof(string), 400)]
+    public async Task<IActionResult> AddMsk10Standarts([FromBody] Mkb10StandartCreation mkb10StandartCreation)
+    {
+        foreach (string mkbcode in mkb10StandartCreation.Mkb10Codes)
+        {
+            foreach (Mkb10EsiliWithBool nameWBool in mkb10StandartCreation.Mkb10EsiliWithBools)
+            {
+                Mkb10Standart mkb10Standart = new()
+                {
+                    Id = Guid.NewGuid(),
+                    Mkb10Code = mkbcode,
+                    EsiliName = nameWBool.EsiliName,
+                    IsMandatory = nameWBool.IsMandatory
+                };
+                await _context.Mkb10Standarts.AddAsync(mkb10Standart);
+            }
+        }
+
+        await _context.SaveChangesAsync();
+
+        return Ok("Standarts added successfully");
+    }
+
+    [HttpGet("Standart", Name = "GetStandartsByCode")]
+    [ProducesResponseType(typeof(Mkb10StandartRead), 200)]
+    [ProducesResponseType(typeof(string), 404)]
+    public async Task<IActionResult> GetStandarts([FromQuery] string code, int limit = 10)
+    {
+        List<Mkb10Standart> query = await _context.Mkb10Standarts
+            .Where(s => s.Mkb10Code == code)
+            .ToListAsync();
+
+        if (query == null)
+        {
+            return NotFound("Standart not found");
+        }
+
+        List<Mkb10EsiliWithBool> serviceWBools = new List<Mkb10EsiliWithBool>();
+
+        foreach (Mkb10Standart standart in query)
+        {
+            Mkb10EsiliWithBool service = new()
+            {
+                EsiliName = standart.EsiliName,
+                IsMandatory = standart.IsMandatory
+            };
+            serviceWBools.Add(service);
+        }
+
+        Mkb10StandartRead result = new Mkb10StandartRead()
+        {
+            Mkb10Code = code,
+            Mkb10EsiliWithBools = serviceWBools
+        };
+        if (result != null) return Ok(result);
+        return NotFound("Standart not found");
+    }
+
+    [HttpGet("Standart/All", Name = "GetAllStandarts")]
+    [ProducesResponseType(typeof(List<Mkb10StandartRead>), 200)]
+    [ProducesResponseType(typeof(string), 404)]
+    public async Task<IActionResult> GetAllStandarts([FromQuery] int limit = 50)
+    {
+       List<Mkb10Standart> query = await _context.Mkb10Standarts
+                .ToListAsync();
+
+            if (query == null)
+            {
+                return NotFound("Standart not found");
+            }
+
+            List<Mkb10StandartRead> result = new List<Mkb10StandartRead>();
+
+            foreach (Mkb10Standart standart in query)
+            {
+                Mkb10StandartRead service = new Mkb10StandartRead()
+                {
+                    Mkb10Code = standart.Mkb10Code,
+                    Mkb10EsiliWithBools = new List<Mkb10EsiliWithBool>()
+                    {
+                        new Mkb10EsiliWithBool()
+                        {
+                            EsiliName =standart.EsiliName,
+                            IsMandatory = standart.IsMandatory
+                        }
+                    }
+                };
+                result.Add(service);
+            }
+
+            if (result != null) return Ok(result);
+        
+        return NotFound("Standart not found");
     }
     
     /*[HttpGet(Name = "GetMKB10s")]
@@ -57,7 +183,7 @@ public class Mkb10Controller: ControllerBase
     /*[HttpPut("{code}", Name = "UpdateMKB10")]
     public async Task<IActionResult> UpdateMKB10(string code, [FromBody] Mkb10Update mkb10Update)
     {
-        Mkb10 mkb10 = SearchMKB10(_context, ParseMKB10(code));
+        Mkb10 mkb10 = SearchMkb10(_context, ParseMKB10(code));
         
         if (mkb10 == null)
         {
@@ -73,7 +199,7 @@ public class Mkb10Controller: ControllerBase
     /*[HttpDelete("{code}", Name = "DeleteMKB10")]
     public async Task<IActionResult> DeleteMKB10(string code)
     {
-        Mkb10 mkb10 = Utilitas.SearchMKB10(_context, Utilitas.ParseMKBCode(code));
+        Mkb10 mkb10 = Utilitas.SearchMkb10(_context, Utilitas.ParseMkb10Code(code));
         
         if (mkb10 == null)
         {
@@ -86,7 +212,9 @@ public class Mkb10Controller: ControllerBase
         return Ok();
     }*/
 
-    [HttpGet(Name = "GetInfoByMkb10Code")]
+    [HttpGet(Name = "GetInfoByFullMkb10Code")]
+    [ProducesResponseType(typeof(Mkb10), 200)]
+    [ProducesResponseType(typeof(string), 404)]
     public async Task<IActionResult> GetCodeInfo([FromQuery] string code, int limit = 10)
     {
         int codeType;
@@ -126,11 +254,12 @@ public class Mkb10Controller: ControllerBase
                 .ToListAsync();
         }
 
-        return !results.IsNullOrEmpty() ? Ok(results.Take((int)limit).ToList()) : NotFound();
+        return !results.IsNullOrEmpty() ? Ok(results.Take((int)limit).ToList()) : NotFound("Mkb10 not found");
     }
-    
-    [HttpGet("Diagnosis", Name="SearchInMkb10Diagnosis")]
-    //public async Task<IActionResult> SearchMkb10([FromQuery] char? litera, string? chapter, int? number, int? subnumber, string? name, int limit = 10)
+        
+    [HttpGet("Search", Name="SearchInMkb10")] 
+    [ProducesResponseType(typeof(Mkb10), 200)]
+    [ProducesResponseType(typeof(string), 404)]
     public async Task<IActionResult> SearchMkb10([FromQuery] string search, int limit = 10)
     {
         IQueryable<Mkb10> query = _context.Mkb10s;
@@ -148,7 +277,7 @@ public class Mkb10Controller: ControllerBase
         if (subnumber != null) query = query.Where(m => m.Subnumber == subnumber);
 
         if (query.Any()) return Ok(query.Take(limit).ToList());
-        return NotFound();
+        return NotFound("Mkb10 not found");
     }
 
 }

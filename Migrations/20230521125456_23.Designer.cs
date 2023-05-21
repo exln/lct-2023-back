@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MediWingWebAPI.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    [Migration("20230519211236_AddInputTable")]
-    partial class AddInputTable
+    [Migration("20230521125456_23")]
+    partial class _23
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -53,56 +53,6 @@ namespace MediWingWebAPI.Migrations
                     b.ToTable("Assignments");
                 });
 
-            modelBuilder.Entity("MediWingWebAPI.Models.ChapterAccordance", b =>
-                {
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Chapter")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Sub")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Name");
-
-                    b.ToTable("Chapters");
-                });
-
-            modelBuilder.Entity("MediWingWebAPI.Models.HealthcareService", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("Block")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("Number")
-                        .HasColumnType("integer");
-
-                    b.Property<char>("Section")
-                        .HasColumnType("character(1)");
-
-                    b.Property<int>("Subnumber")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("Subsubnumber")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("HealthcareServices");
-                });
-
             modelBuilder.Entity("MediWingWebAPI.Models.Mkb10", b =>
                 {
                     b.Property<int>("Id")
@@ -130,7 +80,127 @@ namespace MediWingWebAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("MkB10s");
+                    b.ToTable("Mkb10s");
+                });
+
+            modelBuilder.Entity("MediWingWebAPI.Models.Mkb10Chapter", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Chapter")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Sub")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Mkb10Chapters");
+                });
+
+            modelBuilder.Entity("MediWingWebAPI.Models.Mkb10Standart", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("EsiliName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsMandatory")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Mkb10Code")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Mkb10Standarts");
+                });
+
+            modelBuilder.Entity("MediWingWebAPI.Models.MskEsili", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<bool?>("Ambulatory")
+                        .HasColumnType("boolean");
+
+                    b.Property<int?>("IdCode")
+                        .HasColumnType("integer");
+
+                    b.Property<bool?>("IsChild")
+                        .HasColumnType("boolean");
+
+                    b.Property<int?>("LdpCode")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Modalities")
+                        .HasColumnType("text");
+
+                    b.Property<string>("MskEsiliCode")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool?>("Stationary")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("MskEsilis");
+                });
+
+            modelBuilder.Entity("MediWingWebAPI.Models.MskEsiliAnalog", b =>
+                {
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("MskEsiliId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Name");
+
+                    b.HasIndex("MskEsiliId");
+
+                    b.ToTable("MskEsiliAnalog");
+                });
+
+            modelBuilder.Entity("MediWingWebAPI.Models.MskEsiliType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("MskEsiliTypes");
                 });
 
             modelBuilder.Entity("MediWingWebAPI.Models.Patient", b =>
@@ -165,7 +235,39 @@ namespace MediWingWebAPI.Migrations
                     b.ToTable("Patients");
                 });
 
-            modelBuilder.Entity("MediWingWebAPI.Models.ServiceBlockAccordance", b =>
+            modelBuilder.Entity("MediWingWebAPI.Models.RusEsili", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Block")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Number")
+                        .HasColumnType("integer");
+
+                    b.Property<char>("Section")
+                        .HasColumnType("character(1)");
+
+                    b.Property<int>("Subnumber")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("Subsubnumber")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("RusEsilis");
+                });
+
+            modelBuilder.Entity("MediWingWebAPI.Models.RusEsiliBlock", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -185,10 +287,10 @@ namespace MediWingWebAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ServiceBlocks");
+                    b.ToTable("RusEsiliBlocks");
                 });
 
-            modelBuilder.Entity("MediWingWebAPI.Models.ServiceNumberAccordance", b =>
+            modelBuilder.Entity("MediWingWebAPI.Models.RusEsiliNumber", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -211,10 +313,10 @@ namespace MediWingWebAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ServiceNumbers");
+                    b.ToTable("RusEsiliNumbers");
                 });
 
-            modelBuilder.Entity("MediWingWebAPI.Models.ServiceSectionAccordance", b =>
+            modelBuilder.Entity("MediWingWebAPI.Models.RusEsiliSection", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -231,7 +333,7 @@ namespace MediWingWebAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ServiceSections");
+                    b.ToTable("RusEsiliSections");
                 });
 
             modelBuilder.Entity("MediWingWebAPI.Models.Staff", b =>
@@ -249,28 +351,6 @@ namespace MediWingWebAPI.Migrations
                         .IsUnique();
 
                     b.ToTable("Staffs");
-                });
-
-            modelBuilder.Entity("MediWingWebAPI.Models.Standart", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("HealthcareServiceCode")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<bool>("IsMandatory")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Mkb10Code")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Standarts");
                 });
 
             modelBuilder.Entity("MediWingWebAPI.Models.User", b =>
@@ -359,6 +439,13 @@ namespace MediWingWebAPI.Migrations
                     b.ToTable("UserInputRelations");
                 });
 
+            modelBuilder.Entity("MediWingWebAPI.Models.MskEsiliAnalog", b =>
+                {
+                    b.HasOne("MediWingWebAPI.Models.MskEsili", null)
+                        .WithMany("Analogs")
+                        .HasForeignKey("MskEsiliId");
+                });
+
             modelBuilder.Entity("MediWingWebAPI.Models.Staff", b =>
                 {
                     b.HasOne("MediWingWebAPI.Models.User", "User")
@@ -368,6 +455,11 @@ namespace MediWingWebAPI.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("MediWingWebAPI.Models.MskEsili", b =>
+                {
+                    b.Navigation("Analogs");
                 });
 
             modelBuilder.Entity("MediWingWebAPI.Models.User", b =>

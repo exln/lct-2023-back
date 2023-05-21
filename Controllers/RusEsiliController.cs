@@ -1,4 +1,4 @@
-﻿using System.Text.RegularExpressions;
+﻿/*using System.Text.RegularExpressions;
 using MediWingWebAPI.Data;
 using MediWingWebAPI.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -8,7 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 namespace MediWingWebAPI.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("[controller]")]
 public class RusEsiliController: Controller
 {
     private readonly ILogger<RusEsiliController> _logger;
@@ -106,4 +106,4 @@ public class RusEsiliController: Controller
         return NotFound();
 
     }
-}
+}*/

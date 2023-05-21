@@ -6,8 +6,8 @@ namespace MediWingWebAPI.Models;
 public class Staff
 {
     public Guid Id;
-    public string? Name;
-    public string? Surname;
+    public string Name = "Вася";
+    public string Surname;
     public string? Lastname;
     public string? Position;
     public string? Department;
