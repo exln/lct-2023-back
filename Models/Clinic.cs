@@ -2,21 +2,6 @@
 
 namespace MediWingWebAPI.Models;
 
-/*
- * diagnosis = {
-                "Name": match.group(1) + " " + match.group(2),
-                "Adress": match.group(6),
-                "Filial": match.group(3) if match.group(3) else None,
-                "DiffName": match.group(4) + match.group(5) if match.group(4) else None,
-                "RateGeneral": row["Общий"],
-                "RateProfes": row["Профессионализм"],
-                "RateKind": row["Доброжелательность"],
-                "RateTeam": row["Командная работа"],
-                "RateTrust": row["Доверие"],
-                "RatePatient": row["Пациентоориентированность"],
-                "RateRespect": row["Уважение"]
-            }
- */
 [PrimaryKey("Id")]
 public class Clinic
 {

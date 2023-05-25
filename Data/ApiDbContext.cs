@@ -29,14 +29,22 @@ public class ApiDbContext: DbContext
     
     //MskEsili
     public DbSet<MskEsili> MskEsilis { get; set; }
-    public DbSet<MskEsiliType> MskEsiliTypes { get; set; }
+    
+    //MskAnalysis
+    public DbSet<MskAnalysis> MskAnalyses { get; set; }
+    public DbSet<MskAnalysisType> MskAnalysisTypes { get; set; }
+    public DbSet<MskAnalysisClass> MskAnalysisClasses { get; set; }
+    public DbSet<MskAnalysisCategory> MskAnalysisCategories { get; set; }
 
     //MKB10
     public DbSet<Mkb10> Mkb10s { get; set; }
     public DbSet<Mkb10Chapter> Mkb10Chapters { get; set; }
     
     //MKB10 Standarts
-    public DbSet<Mkb10Standart> Mkb10Standarts { get; set; }
+    public DbSet<MkbStandart> Standarts { get; set; }
+    public DbSet<StandartTag> StandartTags { get; set; }
+    public DbSet<StandartSubTag> StandartSubTags { get; set; }
+
 
     //MKB11 TODO
     
@@ -46,6 +54,7 @@ public class ApiDbContext: DbContext
     
     
     public DbSet<Clinic> Clinics { get; set; }
+    public DbSet<Modality> Modalities { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Staff>()

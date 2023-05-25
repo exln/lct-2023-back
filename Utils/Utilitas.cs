@@ -205,4 +205,11 @@ public class Utilitas
         return resultData.FirstOrDefault();
 
     }
+    
+    public static string GetMkb10FullCode(Mkb10 mkb10)
+    {
+        string code = String.Format("{0}{1:D2}{2}", mkb10.Litera.ToString(), mkb10.Number.ToString(),  mkb10.Subnumber != null 
+            ? "."+mkb10.Subnumber.ToString() : "");
+        return code;
+    }
 }

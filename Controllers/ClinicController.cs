@@ -97,8 +97,8 @@ public class ClinicController : Controller
         else
         {
             clinics = await _context.Clinics
-                .Where(clinic => clinic.Name.Contains(name))
-                .OrderByDescending(clinic => clinic.RateGeneral)
+                .Where(c => c.Name.Contains(name) || c.Address.Contains(name))
+                .OrderBy(clinic => clinic.Name)
                 .ToListAsync();
         }
 

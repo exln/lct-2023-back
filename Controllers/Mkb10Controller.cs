@@ -60,16 +60,21 @@ public class Mkb10Controller: ControllerBase
     {
         foreach (string mkbcode in mkb10StandartCreation.Mkb10Codes)
         {
+            Mkb10 mkb10 = Util.ParseMkb10Code(mkbcode);
+            
             foreach (Mkb10EsiliWithBool nameWBool in mkb10StandartCreation.Mkb10EsiliWithBools)
             {
-                Mkb10Standart mkb10Standart = new()
+                MkbStandart mkbStandart = new()
                 {
-                    Id = Guid.NewGuid(),
-                    Mkb10Code = mkbcode,
-                    EsiliName = nameWBool.EsiliName,
+                    Mkb10Id = _context.Mkb10s
+                        .Where(m => m.Chapter == mkb10.Chapter)
+                        .Where(m => m.Litera == mkb10.Litera)
+                        .Where(m => m.Number == mkb10.Number)
+                        .FirstOrDefault(m => m.Subnumber == mkb10.Subnumber && m.Subnumber != -1)!.Id,
+                    AnalysisId = _context.MskEsilis.FirstOrDefault(e => e.Name == nameWBool.EsiliName)!.Id,
                     IsMandatory = nameWBool.IsMandatory
                 };
-                await _context.Mkb10Standarts.AddAsync(mkb10Standart);
+                await _context.Standarts.AddAsync(mkbStandart);
             }
         }
 
@@ -83,8 +88,16 @@ public class Mkb10Controller: ControllerBase
     [ProducesResponseType(typeof(string), 404)]
     public async Task<IActionResult> GetStandarts([FromQuery] string code, int limit = 10)
     {
-        List<Mkb10Standart> query = await _context.Mkb10Standarts
-            .Where(s => s.Mkb10Code == code)
+        int mkb10Id = _context.Mkb10s
+            .Where(m => m.Chapter == Util.ParseMkb10Code(code).Chapter)
+            .Where(m => m.Litera == Util.ParseMkb10Code(code).Litera)
+            .Where(m => m.Number == Util.ParseMkb10Code(code).Number)
+            .FirstOrDefault(m => m.Subnumber == Util.ParseMkb10Code(code).Subnumber && m.Subnumber != -1)!.Id;
+        
+        if (mkb10Id == null) return NotFound("Mkb10 not found");
+        
+        List<MkbStandart> query = await _context.Standarts
+            .Where(m => m.Mkb10Id == mkb10Id)
             .ToListAsync();
 
         if (query == null)
@@ -94,11 +107,12 @@ public class Mkb10Controller: ControllerBase
 
         List<Mkb10EsiliWithBool> serviceWBools = new List<Mkb10EsiliWithBool>();
 
-        foreach (Mkb10Standart standart in query)
+        foreach (MkbStandart standart in query)
         {
+            MskEsili esili = await _context.MskEsilis.FirstOrDefaultAsync(e => e.Id == standart.AnalysisId);
             Mkb10EsiliWithBool service = new()
             {
-                EsiliName = standart.EsiliName,
+                EsiliName = esili.Name,
                 IsMandatory = standart.IsMandatory
             };
             serviceWBools.Add(service);
@@ -118,26 +132,28 @@ public class Mkb10Controller: ControllerBase
     [ProducesResponseType(typeof(string), 404)]
     public async Task<IActionResult> GetAllStandarts([FromQuery] int limit = 50)
     {
-       List<Mkb10Standart> query = await _context.Mkb10Standarts
+       List<MkbStandart> query = await _context.Standarts
                 .ToListAsync();
 
-            if (query == null)
-            {
-                return NotFound("Standart not found");
-            }
+           if (query == null)
+           {
+               return NotFound("Standart not found");
+           }
 
-            List<Mkb10StandartRead> result = new List<Mkb10StandartRead>();
+           List<Mkb10StandartRead> result = new List<Mkb10StandartRead>();
 
-            foreach (Mkb10Standart standart in query)
+            foreach (MkbStandart standart in query)
             {
+                Mkb10 mkb10 = await _context.Mkb10s.FirstOrDefaultAsync(m => m.Id == standart.Mkb10Id);
+                MskEsili esili = await _context.MskEsilis.FirstOrDefaultAsync(e => e.Id == standart.AnalysisId);
                 Mkb10StandartRead service = new Mkb10StandartRead()
                 {
-                    Mkb10Code = standart.Mkb10Code,
+                    Mkb10Code = Util.GetMkb10FullCode(mkb10),
                     Mkb10EsiliWithBools = new List<Mkb10EsiliWithBool>()
                     {
                         new Mkb10EsiliWithBool()
                         {
-                            EsiliName =standart.EsiliName,
+                            EsiliName = esili.Name,
                             IsMandatory = standart.IsMandatory
                         }
                     }
@@ -148,6 +164,17 @@ public class Mkb10Controller: ControllerBase
             if (result != null) return Ok(result);
         
         return NotFound("Standart not found");
+    }
+    
+    [HttpGet("Chapters", Name = "ChapterList")]
+    [ProducesResponseType(typeof(List<Mkb10Chapter>), 200)]
+    [ProducesResponseType(typeof(string), 404)]
+    public async Task<IActionResult> GetChapters()
+    {
+        List<Mkb10Chapter> chapters = await _context.Mkb10Chapters.ToListAsync();
+         if (chapters != null) return Ok(chapters);
+         return NotFound("Chapters not found");
+        
     }
     
     /*[HttpGet(Name = "GetMKB10s")]

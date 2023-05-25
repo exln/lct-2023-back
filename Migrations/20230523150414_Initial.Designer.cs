@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MediWingWebAPI.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    [Migration("20230521095641_UpdateEsilis")]
-    partial class UpdateEsilis
+    [Migration("20230523150414_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -51,6 +51,54 @@ namespace MediWingWebAPI.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Assignments");
+                });
+
+            modelBuilder.Entity("MediWingWebAPI.Models.Clinic", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("DiffName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Filial")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<float>("RateGeneral")
+                        .HasColumnType("real");
+
+                    b.Property<float>("RateKind")
+                        .HasColumnType("real");
+
+                    b.Property<float>("RatePatient")
+                        .HasColumnType("real");
+
+                    b.Property<float>("RateProfes")
+                        .HasColumnType("real");
+
+                    b.Property<float>("RateRespect")
+                        .HasColumnType("real");
+
+                    b.Property<float>("RateTeam")
+                        .HasColumnType("real");
+
+                    b.Property<float>("RateTrust")
+                        .HasColumnType("real");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Clinics");
                 });
 
             modelBuilder.Entity("MediWingWebAPI.Models.Mkb10", b =>
@@ -108,26 +156,41 @@ namespace MediWingWebAPI.Migrations
                     b.ToTable("Mkb10Chapters");
                 });
 
-            modelBuilder.Entity("MediWingWebAPI.Models.Mkb10Standart", b =>
+            modelBuilder.Entity("MediWingWebAPI.Models.MkbStandart", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("EsiliName")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("EsiliId")
+                        .HasColumnType("integer");
 
                     b.Property<bool>("IsMandatory")
                         .HasColumnType("boolean");
 
-                    b.Property<string>("Mkb10Code")
+                    b.Property<int>("Mkb10Id")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Standarts");
+                });
+
+            modelBuilder.Entity("MediWingWebAPI.Models.Modality", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Mkb10Standarts");
+                    b.ToTable("Modalities");
                 });
 
             modelBuilder.Entity("MediWingWebAPI.Models.MskEsili", b =>
@@ -233,6 +296,28 @@ namespace MediWingWebAPI.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Patients");
+                });
+
+            modelBuilder.Entity("MediWingWebAPI.Models.Recommendation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int?>("UserDiagnosticInputId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserDiagnosticInputId");
+
+                    b.ToTable("Recommendation");
                 });
 
             modelBuilder.Entity("MediWingWebAPI.Models.RusEsili", b =>
@@ -342,13 +427,7 @@ namespace MediWingWebAPI.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("UserId")
-                        .IsUnique();
 
                     b.ToTable("Staffs");
                 });
@@ -380,14 +459,19 @@ namespace MediWingWebAPI.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("StaffId")
+                        .IsUnique();
+
                     b.ToTable("Users");
                 });
 
             modelBuilder.Entity("MediWingWebAPI.Models.UserDiagnosticInput", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateOnly?>("BirthDate")
                         .HasColumnType("date");
@@ -409,9 +493,6 @@ namespace MediWingWebAPI.Migrations
 
                     b.Property<int?>("PatientId")
                         .HasColumnType("integer");
-
-                    b.Property<string>("Recomendation")
-                        .HasColumnType("text");
 
                     b.Property<string>("Sex")
                         .HasColumnType("text");
@@ -446,15 +527,22 @@ namespace MediWingWebAPI.Migrations
                         .HasForeignKey("MskEsiliId");
                 });
 
-            modelBuilder.Entity("MediWingWebAPI.Models.Staff", b =>
+            modelBuilder.Entity("MediWingWebAPI.Models.Recommendation", b =>
                 {
-                    b.HasOne("MediWingWebAPI.Models.User", "User")
-                        .WithOne("Staff")
-                        .HasForeignKey("MediWingWebAPI.Models.Staff", "UserId")
+                    b.HasOne("MediWingWebAPI.Models.UserDiagnosticInput", null)
+                        .WithMany("Recommendations")
+                        .HasForeignKey("UserDiagnosticInputId");
+                });
+
+            modelBuilder.Entity("MediWingWebAPI.Models.User", b =>
+                {
+                    b.HasOne("MediWingWebAPI.Models.Staff", "Staff")
+                        .WithOne("User")
+                        .HasForeignKey("MediWingWebAPI.Models.User", "StaffId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("User");
+                    b.Navigation("Staff");
                 });
 
             modelBuilder.Entity("MediWingWebAPI.Models.MskEsili", b =>
@@ -462,9 +550,14 @@ namespace MediWingWebAPI.Migrations
                     b.Navigation("Analogs");
                 });
 
-            modelBuilder.Entity("MediWingWebAPI.Models.User", b =>
+            modelBuilder.Entity("MediWingWebAPI.Models.Staff", b =>
                 {
-                    b.Navigation("Staff");
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("MediWingWebAPI.Models.UserDiagnosticInput", b =>
+                {
+                    b.Navigation("Recommendations");
                 });
 #pragma warning restore 612, 618
         }
