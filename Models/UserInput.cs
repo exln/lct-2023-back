@@ -10,12 +10,12 @@ public class UserInputRelation
     public string InputName { get; set; }
 }
 
-public class UserInputRead
+public class UserInputRelationRead
 {
     public Guid UserId { get; set; }
     public Guid InputId { get; set; }
     public string InputName { get; set; }
-    public List<UserDiagnosticInput> DiagnosticInputs { get; set; }
+    public List<InputErrorRead>? MissingNames { get; set; }
 }
 
 [PrimaryKey("Id")]
@@ -44,6 +44,19 @@ public class UserDiagnosticInputRead
     public DateOnly? Date { get; set; }
     public string? DoctorPost { get; set; }
     public List<string>? Recommendations { get; set; }
+}
+
+[PrimaryKey("Id")]
+public class InputError
+{
+    public Guid Id { get; set; }
+    public Guid InputId { get; set; }
+    public string DiagnosisName { get; set; }
+}
+public class InputErrorRead
+{
+    public Guid Id { get; set; }
+    public string DiagnosisName { get; set; }
 }
 
 public class UserInputReadWResult
@@ -121,3 +134,4 @@ public class UserInputCheckResult
     public DateTime CreationDate { get; set; }
     public List<UserDiagnosticInputRead> InputDatas { get; set; }
 }
+

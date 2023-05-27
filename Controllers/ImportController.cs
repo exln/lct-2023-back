@@ -1,5 +1,6 @@
 ﻿
 
+using System.Collections.Immutable;
 using System.Globalization;
 using MediWingWebAPI.Data;
 using MediWingWebAPI.Models;
@@ -8,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.IdentityModel.Tokens;
 using OfficeOpenXml;
+using OfficeOpenXml.Drawing.Controls;
 
 namespace MediWingWebAPI.Controllers;
 
@@ -27,23 +29,23 @@ public class ImportController : Controller
     }
 
     [HttpPost(Name = "ImportXLSX")]
-    [ProducesResponseType(typeof(UserInputRelation), 200)]
+    [ProducesResponseType(typeof(UserInputRelationRead), 200)]
     [ProducesResponseType(typeof(string), 400)]
-    public async Task<IActionResult> ImportXLSX(IFormFile? file, string? name)
+    public async Task<IActionResult> ImportXLSX(IFormFile? file, int? name)
     {
         // Проверяем, что файл был успешно загружен
         if (file == null || file.Length == 0) return BadRequest("Файл не найден");
 
         string fileNameWithoutExtension;
         // Получаем имя файла
-        if (name.IsNullOrEmpty())
+        if (name == null)
         {
             fileNameWithoutExtension =
                 Path.GetFileNameWithoutExtension(file.FileName);
         }
         else
         {
-            fileNameWithoutExtension = name;
+            fileNameWithoutExtension = _context.Clinics.FirstOrDefault(c => c.Id == name).Name;
         }
 
         fileNameWithoutExtension += DateTime.Now.ToString("yyyyMMddHHmmss");
@@ -74,7 +76,8 @@ public class ImportController : Controller
             var worksheet = package.Workbook.Worksheets.First();
             int rowCount = worksheet.Dimension.Rows;
             List<UserDiagnosticInput> list = new List<UserDiagnosticInput>();
-
+            
+            List<InputError> inputErrors = new List<InputError>();
             for (int row = 2; row <= rowCount; row++)
             {
                 var recomendation = worksheet.Cells[row, 8].Value.ToString();
@@ -82,20 +85,36 @@ public class ImportController : Controller
                   //  recomendation.Split(new[] { "\n", "\n\n" }, StringSplitOptions.RemoveEmptyEntries);
 
                var input = new UserDiagnosticInput()
+                {
+                    InputId = userInputRelation.InputId,
+                    Sex = worksheet.Cells[row, 1].Value.ToString(),
+                    BirthDate = DateOnly.ParseExact(worksheet.Cells[row, 2].Value.ToString(), "dd.MM.yyyy", CultureInfo.InvariantCulture),
+                    PatientId = Convert.ToInt32(worksheet.Cells[row, 3].Value.ToString()),
+                    MKBCode = worksheet.Cells[row, 4].Value.ToString(),
+                    Diagnosis = worksheet.Cells[row, 5].Value.ToString(),
+                    Date = DateOnly.ParseExact(worksheet.Cells[row, 6].Value.ToString(), "dd.MM.yyyy", CultureInfo.InvariantCulture),
+                    DoctorPost = worksheet.Cells[row, 7].Value.ToString(),
+                    Recommendations = recom
+                };
+                list.Add(input);
+                foreach (string rec in input.Recommendations)
+                {
+                    if (!DiagnosisCheck(rec, _context))
                     {
-                        InputId = userInputRelation.InputId,
-                        Sex = worksheet.Cells[row, 1].Value.ToString(),
-                        BirthDate = DateOnly.ParseExact(worksheet.Cells[row, 2].Value.ToString(), "dd.MM.yyyy", CultureInfo.InvariantCulture),
-                        PatientId = Convert.ToInt32(worksheet.Cells[row, 3].Value.ToString()),
-                        MKBCode = worksheet.Cells[row, 4].Value.ToString(),
-                        Diagnosis = worksheet.Cells[row, 5].Value.ToString(),
-                        Date = DateOnly.ParseExact(worksheet.Cells[row, 6].Value.ToString(), "dd.MM.yyyy", CultureInfo.InvariantCulture),
-                        DoctorPost = worksheet.Cells[row, 7].Value.ToString(),
-                        Recommendations = recom
-                    };
-                    list.Add(input);
-                
+                        var error = new InputError()
+                        {
+                            Id = Guid.NewGuid(),
+                            InputId = input.InputId,
+                            DiagnosisName = rec,
+                        };
+                        if (inputErrors.Where(e => e.DiagnosisName == error.DiagnosisName).ToList().IsNullOrEmpty())
+                        {
+                            inputErrors.Add(error);
+                        }
+                    }   
+                }
             }
+            if (!inputErrors.IsNullOrEmpty()) await _context.InputErrors.AddRangeAsync(inputErrors);
             await _context.UserDiagnosticInputs.AddRangeAsync(list);
         }
         
@@ -104,8 +123,27 @@ public class ImportController : Controller
         
         // Удаляем файл
         System.IO.File.Delete(filePath);
-        userInputRelation.InputName = userInputRelation.InputName.Substring(0, userInputRelation.InputName.Length - 14);
-        return Ok(userInputRelation);
+        List<InputError> ers = await _context.InputErrors
+            .Where(e => e.InputId == userInputRelation.InputId)
+            .ToListAsync();
+        List<InputErrorRead> ersRead = new List<InputErrorRead>();
+        foreach (InputError error in ers)
+        {
+            InputErrorRead inputErrorRead = new InputErrorRead()
+            {
+                Id = error.Id,
+                DiagnosisName = error.DiagnosisName
+            };
+            ersRead.Add(inputErrorRead);
+        }
+        UserInputRelationRead userInputRelationRead = new UserInputRelationRead()
+        {
+            InputId = userInputRelation.InputId,
+            InputName = userInputRelation.InputName,
+            MissingNames = ersRead
+        };
+        userInputRelationRead.InputName = userInputRelationRead.InputName.Substring(0, userInputRelationRead.InputName.Length - 14);
+        return Ok(userInputRelationRead);
     }
     
     [HttpGet("{guid}", Name="SearchInput")]
@@ -242,5 +280,15 @@ public class ImportController : Controller
         }
     
         return outputList;
+    }
+
+    public static bool DiagnosisCheck(string checkstring, ApiDbContext _context)
+    {
+        MskAnalysis? mskAnalysis = _context.MskAnalyses
+                .Where(a => a.Name.Trim().ToLower() == checkstring.Trim().ToLower() ||
+                            a.Analogs.ToList().Contains(checkstring))
+                .FirstOrDefault();
+        if (mskAnalysis == null) return false;
+        return true;
     }
 }

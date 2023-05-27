@@ -74,10 +74,10 @@ public class MskEsiliAnalog
     public string Name { get; set; }
 }
 
-public class MskEsiliAnalogCreation
+public class MskAnalysisAnalogCreation
 {
-    public string EsiliName { get; set; }
-    public List<MskEsiliAnalog> AnalogNames { get; set; }
+    public int AnalysisId { get; set; }
+    public Guid AnalogGuid { get; set; }
 }
 
 public class MskEsiliAnalogRead

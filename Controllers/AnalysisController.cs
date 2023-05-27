@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using MediWingWebAPI.Data;
 using MediWingWebAPI.Models;
+using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Mvc;
 using Util = MediWingWebAPI.Utils.Utilitas;
 using Microsoft.EntityFrameworkCore;
@@ -374,6 +375,48 @@ public class AnalysisController: Controller
         return Ok(result);
     }
 
+    [HttpPost("Analog", Name = "AddAnalog")]
+    public async Task<IActionResult> AddAnalog([FromBody] MskAnalysisAnalogCreation mskAnalysisAnalogCreation)
+    {
+        MskAnalysis mskAnalysis = _context.MskAnalyses
+            .Where(a => a.Id == mskAnalysisAnalogCreation.AnalysisId)
+            .FirstOrDefault();
+
+        string analogNew = _context.InputErrors
+            .Where(e => e.Id == mskAnalysisAnalogCreation.AnalogGuid)
+            .FirstOrDefault().DiagnosisName;
+        
+        if (mskAnalysis == null) return NotFound("Анализ не найден");
+
+        if (mskAnalysis.Analogs != null)
+        {
+            foreach (string analogExist in mskAnalysis.Analogs)
+            {
+                if (analogExist == analogNew) return BadRequest("Аналог уже существует");
+                mskAnalysis.Analogs.Add(analogNew);
+            }
+        }
+        if (mskAnalysis.Analogs == null)
+        {
+            mskAnalysis.Analogs = new List<string>();
+            mskAnalysis.Analogs.Add(analogNew);
+        }
+
+        string errDef = _context.InputErrors
+            .Where(e => e.Id == mskAnalysisAnalogCreation.AnalogGuid)
+            .FirstOrDefault().DiagnosisName;
+        List<InputError> inputError = _context.InputErrors
+            .Where(e => e.DiagnosisName == errDef)
+            .ToList();
+        
+        
+        _context.MskAnalyses.Update(mskAnalysis);
+        _context.InputErrors.RemoveRange(inputError);
+        
+        await _context.SaveChangesAsync();
+        return Ok("Аналоги добавлены");
+    }
+
     /*[HttpPost(Name = "AddEsilis")]
     [ProducesResponseType(typeof(string), 200)]
     [ProducesResponseType(typeof(string), 400)]
@@ -415,7 +458,7 @@ public class AnalysisController: Controller
             try
             {
                 MskEsili mskEsiliByName = _context.MskEsilis
-                    .FirstOrDefault(m => m.Name == mskEsiliAnalogCreation.EsiliName);
+                    .FirstOrDefault(m => m.Name == mskEsiliAnalogCreation.AnalysisName);
                 
                 if (mskEsiliByName == null) return NotFound("Esili not found");
                 mskEsiliByName.Analogs.AddRange(mskEsiliAnalogCreation.AnalogNames);
@@ -437,10 +480,10 @@ public class AnalysisController: Controller
     /*[HttpGet("Analog", Name = "GetEsiliAnalogs")]
     [ProducesResponseType(typeof(List<MskEsiliAnalogRead>), 200)]
     [ProducesResponseType(typeof(string), 400)]
-    public async Task<IActionResult> GetEsiliAnalogs([FromQuery] string? EsiliName, int limit = 100)
+    public async Task<IActionResult> GetEsiliAnalogs([FromQuery] string? AnalysisName, int limit = 100)
     {
         var mskEsilis = await _context.MskEsilis
-            .Where(m => m.Name == EsiliName)
+            .Where(m => m.Name == AnalysisName)
             .ToListAsync();
 
         if (mskEsilis == null) return NotFound("Esili not found");
@@ -451,7 +494,7 @@ public class AnalysisController: Controller
         {
             MskEsiliAnalogRead mskEsiliAnalogRead = new MskEsiliAnalogRead()
             {
-                EsiliName = mskEsili.Name,
+                AnalysisName = mskEsili.Name,
                 AnalogNames = mskEsili.Analogs
             };
             result.Add(mskEsiliAnalogRead);

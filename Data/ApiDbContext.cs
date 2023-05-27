@@ -51,6 +51,7 @@ public class ApiDbContext: DbContext
     //Inputs
     public DbSet<UserInputRelation> UserInputRelations { get; set; }
     public DbSet<UserDiagnosticInput> UserDiagnosticInputs { get; set; }
+    public DbSet<InputError> InputErrors { get; set; }
     
     
     public DbSet<Clinic> Clinics { get; set; }

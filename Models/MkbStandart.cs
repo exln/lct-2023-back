@@ -6,11 +6,11 @@ namespace MediWingWebAPI.Models;
 public class MkbStandart
 {
     public Guid Id { get; set; }
-    public int TagId { get; set; }
-    public int SubTagId { get; set; }
+    //public int TagId { get; set; }
+    //public int SubTagId { get; set; }
     public int TypeId { get; set; }
     public bool IsCapital { get; set; }
-    public int AnalysisId { get; set; }
+    public int EsiliId { get; set; }
     public int Mkb10Id { get; set; }
     public bool IsMandatory { get; set; }
 }
@@ -33,23 +33,31 @@ public class StandartSubTag
 public class Mkb10StandartRead
 {
     public string Mkb10Code { get; set; }
-    public List<Mkb10EsiliWithBool> Mkb10EsiliWithBools { get; set; }
+    public List<AnalysisWithBool> Mkb10EsiliWithBools { get; set; }
 }
 
 public class Mkb10StandartCreation
 {
-    public List<Mkb10EsiliWithBool> Mkb10EsiliWithBools { get; set; }
+    //public string Tag { get; set; }
+    //public string SubTag { get; set; }
+    public List<AnalysisIdWithBool> AnalysesWBools { get; set; }
     public List<string> Mkb10Codes { get; set; }
 }
 
-public class Mkb10EsiliWithBool
+public class AnalysisWithBool
 {
-    public string EsiliName { get; set; }
+    public string AnalysisName { get; set; }
+    public bool IsMandatory { get; set; }
+}
+
+public class AnalysisIdWithBool
+{
+    public int AnalysisId { get; set; }
     public bool IsMandatory { get; set; }
 }
 
 public class Mkb10StandartUpdate
 {
-    public List<Mkb10EsiliWithBool> Mkb10EsiliWithBools { get; set; }
+    public List<AnalysisWithBool> Mkb10EsiliWithBools { get; set; }
     public List<string> Mkb10Codes { get; set; }
 }
