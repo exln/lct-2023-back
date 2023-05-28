@@ -350,7 +350,7 @@ public class AnalysisController: Controller
     public async Task<IActionResult> SearchAnalyses([FromQuery] string? search, int? id)
     {
         List<MskAnalysisGet> result = new List<MskAnalysisGet>();
-
+    
         List<MskAnalysis> Analyses = _context.MskAnalyses
             .Where(a => a.Name.Contains(search) || a.Id == id)
             .ToList();
@@ -393,14 +393,13 @@ public class AnalysisController: Controller
             foreach (string analogExist in mskAnalysis.Analogs)
             {
                 if (analogExist == analogNew) return BadRequest("Аналог уже существует");
-                mskAnalysis.Analogs.Add(analogNew);
             }
         }
         if (mskAnalysis.Analogs == null)
         {
             mskAnalysis.Analogs = new List<string>();
-            mskAnalysis.Analogs.Add(analogNew);
         }
+        mskAnalysis.Analogs.Add(analogNew);
 
         string errDef = _context.InputErrors
             .Where(e => e.Id == mskAnalysisAnalogCreation.AnalogGuid)

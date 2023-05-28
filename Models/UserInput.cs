@@ -74,9 +74,8 @@ public class UserInputReadWResult
 
 public class RecomendationWResult
 {
-    public int Id { get; set; }
     public string Name { get; set; }
-    public int Status { get; set; }
+    public bool? Status { get; set; }
 }
 
 [PrimaryKey("Id")]
@@ -135,3 +134,53 @@ public class UserInputCheckResult
     public List<UserDiagnosticInputRead> InputDatas { get; set; }
 }
 
+public class UserDiadnosticOutput
+{
+    public int Id { get; set; }
+    public string? Sex { get; set; }
+    public DateOnly? BirthDate { get; set; }
+    public int? PatientId { get; set; }
+    public string? MKBCode { get; set; }
+    public string? Diagnosis { get; set; }
+    public DateOnly? Date { get; set; }
+    public string? DoctorPost { get; set; }
+    public bool StandartExists { get; set; }
+    public double? Accuracy { get; set; }
+    public List<RecommendationGroup>? RecommendationsGrouped { get; set; }
+}
+
+public class RecommendationGroup
+{
+    public int GroupStatus { get; set; }
+    public string GroupStatusName { get; set; }
+    public List<string> GroupRecommendations { get; set; }
+}
+
+public class UserOutputRead
+{
+    public Guid Id { get; set; }
+    public string Name { get; set; }
+    public DateTime CreationDate { get; set; }
+    public double TotalAccuracy { get; set; }
+    public List<UserDiadnosticOutput> OutputDatas { get; set; }
+}
+
+[PrimaryKey("Id")]
+public class Status
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+}
+
+public class RecommendationsWStatus
+{
+    public string Name { get; set; }
+    public int Status { get; set; }
+}
+
+public class AvailableRecommendations
+{
+    public string Name { get; set; }
+    public bool Status { get; set; }
+    public bool IsAnalog { get; set; }
+}
