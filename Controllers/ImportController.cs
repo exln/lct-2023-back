@@ -240,6 +240,10 @@ public class ImportController : Controller
     [ProducesResponseType(typeof(string), 404)]
     public IActionResult GetLastRequests([FromQuery] int limit = 10)
     {
+        if(limit == 0)
+        {
+            limit = 10;
+        }
         var lastRequests = _context.UserInputRelations
             .Take(limit)
             .ToList();
@@ -626,18 +630,70 @@ public class ImportController : Controller
         return true;
     }
     
-    [HttpGet("Statistics/{guid}")]
-    [ProducesResponseType(typeof(StatisticsOutput), 200)]
-    public async Task<IActionResult> GetStatistics(Guid guid)
+    [HttpGet("Statistics/Doctor/{guid}")]
+[ProducesResponseType(typeof(DoctorDepartmentStatisticsOutput), 200)]
+public async Task<IActionResult> GetDoctorStatistics(Guid guid)
+{
+    Task<IActionResult> userOutputReadTask = GetResultByGuid(guid);
+    IActionResult userOutputReadActionResult = await userOutputReadTask;
+    UserOutputRead userOutputRead = new UserOutputRead();
+    if (userOutputReadActionResult is OkObjectResult okObjectResult)
     {
-        var statistics = new StatisticsOutput();
+        userOutputRead = (UserOutputRead)okObjectResult.Value;
+    }
+    else
+    {
+        Console.WriteLine("Error reading user output");
+    }
+
+    List<UserDiadnosticOutput> userDiadnosticOutputs = userOutputRead.OutputDatas;
+
+    var doctors = userDiadnosticOutputs.Select(o => o.DoctorPost).Distinct();
+    var doctorStatistics = new DoctorStatisticsOutput
+    {
+        TotalDoctors = doctors.Count()
+    };
+
+    foreach (var doctor in doctors)
+    {
+        var doctorOutputs = userDiadnosticOutputs.Where(o => o.DoctorPost == doctor);
+        var totalRecommendations = doctorOutputs.Sum(o => o.RecommendationsGrouped.Sum(g => g.GroupRecommendations.Count));
+        var correctRecommendations = doctorOutputs.Sum(o => o.RecommendationsGrouped
+            .Where(g => g.GroupStatus == 1 || g.GroupStatus == 2)
+            .Sum(g => g.GroupRecommendations.Count));
+        // Статистика по отделениям
+        var departmentCount = doctorOutputs.Count();
+        var doctorStats = new DoctorStatistics
+        {
+            DoctorPost = doctor,
+            TotalRecommendations = totalRecommendations,
+            CorrectRecommendationRatio = totalRecommendations > 0 ? correctRecommendations / (double)totalRecommendations : 0,
+            TotalPatients = departmentCount
+        };
+
+        doctorStatistics.DoctorStatistics.Add(doctorStats);
+    }
+
+    var doctorDepartmentStatistics = new DoctorDepartmentStatisticsOutput
+    {
+        TotalDoctors = doctorStatistics.TotalDoctors,
+        DoctorStatistics = doctorStatistics.DoctorStatistics
+    };
+
+    return Ok(doctorDepartmentStatistics);
+}
+
+
+    [HttpGet("Statistics/Patient/{guid}")]
+    [ProducesResponseType(typeof(PatientStatisticsOutput), 200)]
+    public async Task<IActionResult> GetPatientStatistics(Guid guid)
+    {
         Task<IActionResult> userOutputReadTask = GetResultByGuid(guid);
         IActionResult userOutputReadActionResult = await userOutputReadTask;
         UserOutputRead userOutputRead = new UserOutputRead();
         if (userOutputReadActionResult is OkObjectResult okObjectResult)
         {
             userOutputRead = (UserOutputRead)okObjectResult.Value;
-
         }
         else
         {
@@ -646,9 +702,11 @@ public class ImportController : Controller
 
         List<UserDiadnosticOutput> userDiadnosticOutputs = userOutputRead.OutputDatas;
 
-        // Статистика по пациентам
         var patients = userDiadnosticOutputs.Select(o => o.PatientId).Distinct();
-        statistics.TotalPatients = patients.Count();
+        var patientStatistics = new PatientStatisticsOutput
+        {
+            TotalPatients = patients.Count()
+        };
 
         foreach (var diagnosis in userDiadnosticOutputs
             .Select(o => new { Diagnosis = o.Diagnosis, MKBCode = o.MKBCode })
@@ -676,38 +734,39 @@ public class ImportController : Controller
                 Diagnosis = diagnosis.Diagnosis,
                 TotalPatients = patientsWithDiagnosis.Count(),
                 AverageAge = averageAge,
-                CorrectRecommendationRatio = (int)patientsWithDiagnosis.Average(o => o.Accuracy) };
-
-            statistics.PatientStatistics.Add(diagnosisStats);
-        }
-
-        // Статистика по врачам
-        var doctors = userDiadnosticOutputs.Select(o => o.DoctorPost).Distinct();
-        statistics.TotalDoctors = doctors.Count();
-
-        foreach (var doctor in doctors)
-        {
-            var doctorOutputs = userDiadnosticOutputs.Where(o => o.DoctorPost == doctor);
-            var totalRecommendations = doctorOutputs.Sum(o => o.RecommendationsGrouped.Sum(g => g.GroupRecommendations.Count));
-            var correctRecommendations = doctorOutputs.Sum(o => o.RecommendationsGrouped
-                .Where(g => g.GroupStatus == 1 || g.GroupStatus == 2)
-                .Sum(g => g.GroupRecommendations.Count));
-
-            var doctorStats = new DoctorStatistics
-            {
-                DoctorPost = doctor,
-                TotalRecommendations = totalRecommendations,
-                CorrectRecommendationRatio = totalRecommendations > 0 ? correctRecommendations / (double)totalRecommendations : 0
+                CorrectRecommendationRatio = (int)patientsWithDiagnosis.Average(o => o.Accuracy)
             };
 
-            statistics.DoctorStatistics.Add(doctorStats);
+            patientStatistics.PatientStatistics.Add(diagnosisStats);
         }
 
-        // Статистика по типам исследований
+        return Ok(patientStatistics);
+    }
+
+    [HttpGet("Statistics/Recommendation/{guid}")]
+    [ProducesResponseType(typeof(RecommendationStatisticsOutput), 200)]
+    public async Task<IActionResult> GetRecommendationStatistics(Guid guid)
+    {
+        Task<IActionResult> userOutputReadTask = GetResultByGuid(guid);
+        IActionResult userOutputReadActionResult = await userOutputReadTask;
+        UserOutputRead userOutputRead = new UserOutputRead();
+        if (userOutputReadActionResult is OkObjectResult okObjectResult)
+        {
+            userOutputRead = (UserOutputRead)okObjectResult.Value;
+        }
+        else
+        {
+            Console.WriteLine("Error reading user output");
+        }
+
+        List<UserDiadnosticOutput> userDiadnosticOutputs = userOutputRead.OutputDatas;
+
         var recommendationTypes = userDiadnosticOutputs
             .SelectMany(o => o.RecommendationsGrouped.SelectMany(g => g.GroupRecommendations))
             .Distinct();
         
+        var recommendationStatistics = new RecommendationStatisticsOutput();
+
         foreach (var type in recommendationTypes)
         {
             var typeCount = userDiadnosticOutputs
@@ -721,27 +780,10 @@ public class ImportController : Controller
                 TotalRecommendations = typeCount
             };
 
-            statistics.RecommendationTypeStatistics.Add(typeStats);
+            recommendationStatistics.RecommendationTypeStatistics.Add(typeStats);
         }
 
-        // Статистика по отделениям
-        var departments = userDiadnosticOutputs.Select(o => o.DoctorPost).Distinct();
-
-        foreach (var department in departments)
-        {
-            var departmentCount = userDiadnosticOutputs.Count(o => o.DoctorPost == department);
-
-            var departmentStats = new DepartmentStatistics
-            {
-                Department = department,
-                TotalPatients = departmentCount
-            };
-
-            statistics.DepartmentStatistics.Add(departmentStats);
-        }
-
-        return Ok(statistics);
+        return Ok(recommendationStatistics);
     }
 
-    
 }
